@@ -1,13 +1,12 @@
-#include <SFML/Graphics.hpp>
+#include "header.h"
 
 using namespace sf;
 
 int main()
 {
-    RenderWindow window(VideoMode(600,600),"click_moving");
-    CircleShape Circle(300,70);
-    Circle.setFillColor(Color::Red);
-    Circle.setPosition(40,50);
+    RenderWindow window(VideoMode(X_MAX,Y_MAX),"OK, It is a start");
+    struct planets* list = new struct planets[2];
+    list = create();
     while(window.isOpen())
     {
         Event event;
@@ -15,11 +14,10 @@ int main()
         {
             if(event.type == Event::Closed)
                 window.close();
-            if(event.type==Event::MouseButtonPressed)
-                Circle.move(10,0);
         }
         window.clear();
-        window.draw(Circle);
+        for(int i=0; i<NUM_PLANETS;i++)
+            window.draw(list[i].picture);
         window.display();
     }
     return 0;
