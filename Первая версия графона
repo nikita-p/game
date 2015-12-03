@@ -1,0 +1,340 @@
+#include <SFML/Graphics.hpp>
+#include <iostream>
+#include <math.h>
+using namespace sf;
+using namespace std;
+
+struct planet
+{
+	int name,x,y,ships,state;
+};
+
+
+
+
+void begining(struct planet *planets)
+{   
+	///голубая///
+	planets[0].name=0;
+	planets[0].state=0;
+	planets[0].ships=5;
+	planets[0].x=100;
+	planets[0].y=400;
+	///зеленая///
+	planets[1].name=1;
+	planets[1].state=0;
+	planets[1].ships=0;
+	planets[1].x=700;
+	planets[1].y=100;
+	///красная///
+	planets[2].name=0;
+	planets[2].state=0;
+	planets[2].ships=0;
+	planets[2].x=1000;
+	planets[2].y=450;
+}
+int main()
+{
+	struct planet  planets[3];
+	begining(planets);
+	RenderWindow window(VideoMode(1280,720),"1.0");
+
+	////////фон//////////////////////////////
+
+	Image fn; //создаем объект Image (изображение)
+	fn.loadFromFile("images\\fn.jpg");//загружаем в него файл
+
+	Texture fn_texture;//создаем объект Texture (текстура)
+	fn_texture.loadFromImage(fn);//передаем в него объект Image (изображения)
+
+	Sprite fn_sprite;//создаем объект Sprite(спрайт)
+	fn_sprite.setTexture(fn_texture);//передаём в него объект Texture (текстуры)
+	fn_sprite.setPosition(0, 0);//задаем начальные координаты появления спрайта
+
+	///////////планеты без свечения///////////////////////////
+
+	Image planet1; 
+	planet1.loadFromFile("images\\planet1.jpg");
+	planet1.createMaskFromColor(Color(0, 0, 0));
+
+	Texture planet1_texture;
+	planet1_texture.loadFromImage(planet1);
+
+	Sprite planet1_blue_sprite;
+	planet1_blue_sprite.setTexture(planet1_texture);
+	planet1_blue_sprite.setTextureRect(IntRect(0,0,200,200));
+	planet1_blue_sprite.setPosition(planets[0].x, planets[0].y);
+
+	Sprite planet1_green_sprite;
+	planet1_green_sprite.setTexture(planet1_texture);
+	planet1_green_sprite.setTextureRect(IntRect(0,200,200,200));
+	planet1_green_sprite.setPosition(planets[1].x,planets[1].y);
+
+	Sprite planet1_red_sprite;
+	planet1_red_sprite.setTexture(planet1_texture);
+	planet1_red_sprite.setTextureRect(IntRect(0,400,200,200));
+	planet1_red_sprite.setPosition(planets[2].x,planets[2].y);
+	////////////////////планеты со свечением///////////////////////
+
+	Image planet2; 
+	planet2.loadFromFile("images\\planet2.jpg");
+	planet2.createMaskFromColor(Color(0, 0, 0));
+
+	Texture planet2_texture;
+	planet2_texture.loadFromImage(planet2);
+
+	Sprite planet2_blue_sprite;
+	planet2_blue_sprite.setTexture(planet2_texture);
+	planet2_blue_sprite.setTextureRect(IntRect(0,0,200,200));
+	planet2_blue_sprite.setPosition(planets[0].x, planets[0].y);
+
+	Sprite planet2_green_sprite;
+	planet2_green_sprite.setTexture(planet2_texture);
+	planet2_green_sprite.setTextureRect(IntRect(0,200,200,200));
+	planet2_green_sprite.setPosition(planets[1].x,planets[1].y);
+
+	Sprite planet2_red_sprite;
+	planet2_red_sprite.setTexture(planet2_texture);
+	planet2_red_sprite.setTextureRect(IntRect(0,400,200,200));
+	planet2_red_sprite.setPosition(planets[2].x,planets[2].y);
+
+	////////////корабль////////////////////////////
+   /* 
+	Image ship; 
+	ship.loadFromFile("images\\ship.jpg");
+	ship.createMaskFromColor(Color(0, 0, 0));
+
+	Texture ship_texture;
+	ship_texture.loadFromImage(ship);
+    
+	Sprite ship_sprite;
+	ship_sprite.setTexture(ship_texture);
+	ship_sprite.setTextureRect(IntRect(0,0,50,50));
+	ship_sprite.setPosition(planets[0].x,planets[0].y);
+
+	*/
+
+	/////////////////////////////////////
+	 
+	Clock clock;
+	float timescore=0,timescore1=0,t=0;
+	float dis = 10000;
+	int move01=0, move02=0, move10=0, move12=0, move20=0, move21=0;
+
+	while (window.isOpen())
+	{
+		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
+		clock.restart(); //перезагружает время
+		time = time/1000; //скорость игры
+		Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+		timescore=timescore+time;
+		timescore1=timescore1+time;
+		t=t+time/10;
+		
+
+		////////////// вращение зеленой планеты ///////////////////////
+		if(timescore1 > 200)
+		{
+			planet1_green_sprite.setTextureRect(IntRect(0,200,200,200));
+			planet2_green_sprite.setTextureRect(IntRect(0,200,200,200));
+		}
+		if(timescore1 > 400)
+		{
+			planet1_green_sprite.setTextureRect(IntRect(210,200,200,200));
+			planet2_green_sprite.setTextureRect(IntRect(210,200,200,200));
+		}
+		if(timescore1 > 600)
+		{
+			planet1_green_sprite.setTextureRect(IntRect(420,200,200,200)); 
+			planet2_green_sprite.setTextureRect(IntRect(420,200,200,200));
+		}
+		if(timescore1 > 800)
+		{
+			planet1_green_sprite.setTextureRect(IntRect(630,200,200,200));
+			planet2_green_sprite.setTextureRect(IntRect(630,200,200,200));
+			timescore1=0;
+		}
+
+		///////////////// вращение красной и синей планет /////////////////////
+
+		if(timescore > 250)  
+		{
+			planet1_blue_sprite.setTextureRect(IntRect(0,0,200,200));
+			planet2_blue_sprite.setTextureRect(IntRect(0,0,200,200));
+
+			planet1_red_sprite.setTextureRect(IntRect(0,400,200,200));
+			planet2_red_sprite.setTextureRect(IntRect(0,400,200,200));
+		}
+		if(timescore > 500)  
+		{
+			planet1_blue_sprite.setTextureRect(IntRect(210, 0, 200, 200));
+			planet2_blue_sprite.setTextureRect(IntRect(210, 0, 200, 200));
+
+			planet1_red_sprite.setTextureRect(IntRect(210,400,200,200));
+			planet2_red_sprite.setTextureRect(IntRect(210,400,200,200));
+		}
+		if(timescore > 750)  
+		{
+			planet1_blue_sprite.setTextureRect(IntRect(420, 0, 200, 200));
+			planet2_blue_sprite.setTextureRect(IntRect(420, 0, 200, 200));
+
+			planet1_red_sprite.setTextureRect(IntRect(420,400,200,200));
+			planet2_red_sprite.setTextureRect(IntRect(420,400,200,200));
+		}	
+		if(timescore > 1000)  
+		{
+			planet1_blue_sprite.setTextureRect(IntRect(630, 0, 200, 200));
+			planet2_blue_sprite.setTextureRect(IntRect(630, 0, 200, 200));
+
+			planet1_red_sprite.setTextureRect(IntRect(630,400,200,200));
+			planet2_red_sprite.setTextureRect(IntRect(630,400,200,200));
+
+			timescore=0;
+		} 
+
+		//////////////// выделение планет //////////////////
+
+
+
+
+		if (event.type == Event::MouseButtonPressed)
+			if (event.key.code == Mouse::Left)
+			{
+				if (event.mouseButton.x > planets[0].x && event.mouseButton.x < (planets[0].x + 200) && event.mouseButton.y > planets[0].y && event.mouseButton.y < (planets[0].y + 200) )
+				{
+
+					planets[0].state=1;
+					planets[1].state=0;
+					planets[2].state=0;
+
+				}
+				if (event.mouseButton.x > planets[1].x && event.mouseButton.x < (planets[1].x + 200) && event.mouseButton.y > planets[1].y && event.mouseButton.y < (planets[1].y + 200))
+				{
+					planets[0].state=0;
+					planets[1].state=1;
+					planets[2].state=0;
+				}
+
+				if (event.mouseButton.x > planets[2].x && event.mouseButton.x < (planets[2].x + 200) && event.mouseButton.y > planets[2].y && event.mouseButton.y < (planets[2].y + 200))
+				{
+					planets[0].state=0;
+					planets[1].state=0;
+					planets[2].state=1;
+				}
+
+			}
+
+
+			/////////атака планет и снятие выделения //////////
+
+
+
+			if (event.type == Event::MouseButtonPressed)
+				if (event.key.code == Mouse::Right)
+				{
+					if (event.mouseButton.x > planets[0].x && event.mouseButton.x < (planets[0].x + 200) && event.mouseButton.y > planets[0].y && event.mouseButton.y < (planets[0].y + 200) )
+					{
+
+						if(planets[0].state==1)
+							planets[0].state=0;
+
+						if(planets[1].state==1)
+							move10=1;
+
+						if(planets[2].state==1)
+							move20=1;  
+
+					}
+					if (event.mouseButton.x > planets[1].x && event.mouseButton.x < (planets[1].x + 200) && event.mouseButton.y > planets[1].y && event.mouseButton.y < (planets[1].y + 200))
+					{
+
+						if(planets[1].state==1)
+							planets[1].state=0;
+
+						if(planets[0].state==1)
+							move01=1;
+
+						if(planets[2].state==1)
+							move20=1;
+
+					}
+
+					if (event.mouseButton.x > planets[2].x && event.mouseButton.x < (planets[2].x + 200) && event.mouseButton.y > planets[2].y && event.mouseButton.y < (planets[2].y + 200))
+					{
+
+						if(planets[2].state==1)
+							planets[2].state=0;
+
+						if(planets[0].state==1)
+							move02=1;
+
+						if(planets[1].state==1)
+							move12=1;
+
+					}
+
+				}
+/*
+				float dx,dy,y0,x0,x,y,dis0; 
+
+				if (move01 == 1)
+				{
+
+					x0=planets[1].x-planets[0].x;
+					y0=planets[1].y-planets[0].y;
+					dis0=sqrt(x0*x0+y0*y0);
+						dx=(x0/dis0);
+						dy=(y0/dis0);
+						
+	                    ship_sprite.setPosition(planets[0].x+100,planets[0].y);
+						if(dis>50)
+						{  
+							ship_sprite.move(t*dx, t*dy);
+							x=x0-t*dx;
+					        y=y0-t*dy;
+							dis=sqrt(x*x+y*y);
+							window.draw(ship_sprite);
+							window.display();
+						}
+						else
+							t=0;
+						
+                 
+
+				}
+*/
+				//////////////// условия вывода обычных планет ///////////////////////////
+				window.clear();
+				window.draw(fn_sprite);
+
+				if (planets[0].state==0)
+					window.draw(planet1_blue_sprite);
+
+				if (planets[1].state==0)
+					window.draw(planet1_green_sprite);
+
+				if (planets[2].state==0)
+					window.draw(planet1_red_sprite);
+
+				//////////////// условия вывода светящихся планет //////////////////////
+
+				if (planets[0].state==1)
+					window.draw(planet2_blue_sprite);
+
+				if (planets[1].state==1)
+					window.draw(planet2_green_sprite);
+
+				if (planets[2].state==1)
+					window.draw(planet2_red_sprite);
+
+				
+
+				window.display();
+	}
+	return 0;
+}
