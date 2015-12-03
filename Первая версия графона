@@ -3,42 +3,40 @@
 #include <math.h>
 using namespace sf;
 using namespace std;
-
 struct planet
 {
-	int name,x,y,ships,state;
+	int name,x,y,ships,state,belong,type;
 };
-
-
-
-
 void begining(struct planet *planets)
 {   
-	///голубая///
+	///первая///
 	planets[0].name=0;
 	planets[0].state=0;
 	planets[0].ships=5;
 	planets[0].x=100;
 	planets[0].y=400;
-	///зеленая///
+	planets[0].belong=1;// Пренадлежность к игроку(1-синий,2-красный,0-свободна)
+	planets[0].type=1;//Один из трех типов планет(различия только визульные)
+	///вторая///
 	planets[1].name=1;
 	planets[1].state=0;
 	planets[1].ships=0;
 	planets[1].x=700;
 	planets[1].y=100;
-	///красная///
-	planets[2].name=0;
+	planets[1].belong=0;
+	planets[1].type=2;
+	///третья///
+	planets[2].name=2;
 	planets[2].state=0;
 	planets[2].ships=0;
 	planets[2].x=1000;
 	planets[2].y=450;
+	planets[2].belong=2;
+	planets[2].type=3;
 }
-int main()
+void add_planets(struct planet  *planets,int N)
 {
-	struct planet  planets[3];
-	begining(planets);
-	RenderWindow window(VideoMode(1280,720),"1.0");
-
+	RenderWindow window(VideoMode(1280,720),"1.0");  
 	////////фон//////////////////////////////
 
 	Image fn; //создаем объект Image (изображение)
@@ -50,77 +48,36 @@ int main()
 	Sprite fn_sprite;//создаем объект Sprite(спрайт)
 	fn_sprite.setTexture(fn_texture);//передаём в него объект Texture (текстуры)
 	fn_sprite.setPosition(0, 0);//задаем начальные координаты появления спрайта
-
-	///////////планеты без свечения///////////////////////////
-
-	Image planet1; 
-	planet1.loadFromFile("images\\planet1.jpg");
-	planet1.createMaskFromColor(Color(0, 0, 0));
-
-	Texture planet1_texture;
-	planet1_texture.loadFromImage(planet1);
-
-	Sprite planet1_blue_sprite;
-	planet1_blue_sprite.setTexture(planet1_texture);
-	planet1_blue_sprite.setTextureRect(IntRect(0,0,200,200));
-	planet1_blue_sprite.setPosition(planets[0].x, planets[0].y);
-
-	Sprite planet1_green_sprite;
-	planet1_green_sprite.setTexture(planet1_texture);
-	planet1_green_sprite.setTextureRect(IntRect(0,200,200,200));
-	planet1_green_sprite.setPosition(planets[1].x,planets[1].y);
-
-	Sprite planet1_red_sprite;
-	planet1_red_sprite.setTexture(planet1_texture);
-	planet1_red_sprite.setTextureRect(IntRect(0,400,200,200));
-	planet1_red_sprite.setPosition(planets[2].x,planets[2].y);
-	////////////////////планеты со свечением///////////////////////
-
-	Image planet2; 
-	planet2.loadFromFile("images\\planet2.jpg");
-	planet2.createMaskFromColor(Color(0, 0, 0));
-
-	Texture planet2_texture;
-	planet2_texture.loadFromImage(planet2);
-
-	Sprite planet2_blue_sprite;
-	planet2_blue_sprite.setTexture(planet2_texture);
-	planet2_blue_sprite.setTextureRect(IntRect(0,0,200,200));
-	planet2_blue_sprite.setPosition(planets[0].x, planets[0].y);
-
-	Sprite planet2_green_sprite;
-	planet2_green_sprite.setTexture(planet2_texture);
-	planet2_green_sprite.setTextureRect(IntRect(0,200,200,200));
-	planet2_green_sprite.setPosition(planets[1].x,planets[1].y);
-
-	Sprite planet2_red_sprite;
-	planet2_red_sprite.setTexture(planet2_texture);
-	planet2_red_sprite.setTextureRect(IntRect(0,400,200,200));
-	planet2_red_sprite.setPosition(planets[2].x,planets[2].y);
-
-	////////////корабль////////////////////////////
-   /* 
-	Image ship; 
-	ship.loadFromFile("images\\ship.jpg");
-	ship.createMaskFromColor(Color(0, 0, 0));
-
-	Texture ship_texture;
-	ship_texture.loadFromImage(ship);
-    
-	Sprite ship_sprite;
-	ship_sprite.setTexture(ship_texture);
-	ship_sprite.setTextureRect(IntRect(0,0,50,50));
-	ship_sprite.setPosition(planets[0].x,planets[0].y);
-
-	*/
-
-	/////////////////////////////////////
-	 
+	
+	Image _planets; 
+	_planets.loadFromFile("images\\planets.jpg");
+	_planets.createMaskFromColor(Color(0, 0, 0));
+	Texture planets_texture;
+	planets_texture.loadFromImage(_planets);
+	Sprite planets1_sprite[3];
+	Sprite planets2_sprite[3];
+	for(int i=0 ; i < N ; i++)
+	{
+		planets1_sprite[i].setTexture(planets_texture);
+		planets1_sprite[i].setPosition(planets[i].x, planets[i].y);
+		planets2_sprite[i].setTexture(planets_texture);
+		planets2_sprite[i].setPosition(planets[i].x, planets[i].y);
+		int y1 = (planets[i].type-1)*200, y2=y1+600;
+		planets1_sprite[i].setTextureRect(IntRect(0,y1,200,200));
+		planets2_sprite[i].setTextureRect(IntRect(0,y2,200,200));
+		if(planets[i].belong==1)
+		{
+			planets1_sprite[i].setColor(Color::Cyan);
+			planets2_sprite[i].setColor(Color::Cyan);
+		}
+		if(planets[i].belong==2)
+		{
+			planets1_sprite[i].setColor(Color::Red);
+			planets2_sprite[i].setColor(Color::Red);
+		}
+	}
 	Clock clock;
-	float timescore=0,timescore1=0,t=0;
-	float dis = 10000;
-	int move01=0, move02=0, move10=0, move12=0, move20=0, move21=0;
-
+	float timescore=0;
 	while (window.isOpen())
 	{
 		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
@@ -133,208 +90,68 @@ int main()
 				window.close();
 		}
 		timescore=timescore+time;
-		timescore1=timescore1+time;
-		t=t+time/10;
-		
-
-		////////////// вращение зеленой планеты ///////////////////////
-		if(timescore1 > 200)
-		{
-			planet1_green_sprite.setTextureRect(IntRect(0,200,200,200));
-			planet2_green_sprite.setTextureRect(IntRect(0,200,200,200));
-		}
-		if(timescore1 > 400)
-		{
-			planet1_green_sprite.setTextureRect(IntRect(210,200,200,200));
-			planet2_green_sprite.setTextureRect(IntRect(210,200,200,200));
-		}
-		if(timescore1 > 600)
-		{
-			planet1_green_sprite.setTextureRect(IntRect(420,200,200,200)); 
-			planet2_green_sprite.setTextureRect(IntRect(420,200,200,200));
-		}
-		if(timescore1 > 800)
-		{
-			planet1_green_sprite.setTextureRect(IntRect(630,200,200,200));
-			planet2_green_sprite.setTextureRect(IntRect(630,200,200,200));
-			timescore1=0;
-		}
-
-		///////////////// вращение красной и синей планет /////////////////////
-
 		if(timescore > 250)  
-		{
-			planet1_blue_sprite.setTextureRect(IntRect(0,0,200,200));
-			planet2_blue_sprite.setTextureRect(IntRect(0,0,200,200));
-
-			planet1_red_sprite.setTextureRect(IntRect(0,400,200,200));
-			planet2_red_sprite.setTextureRect(IntRect(0,400,200,200));
-		}
+			for (int i=0 ; i < N ; i++)
+			{
+				int y1 = (planets[i].type-1)*200, y2=y1+600;
+				planets1_sprite[i].setTextureRect(IntRect(0,y1,200,200));
+				planets2_sprite[i].setTextureRect(IntRect(0,y2,200,200));
+			}
 		if(timescore > 500)  
-		{
-			planet1_blue_sprite.setTextureRect(IntRect(210, 0, 200, 200));
-			planet2_blue_sprite.setTextureRect(IntRect(210, 0, 200, 200));
-
-			planet1_red_sprite.setTextureRect(IntRect(210,400,200,200));
-			planet2_red_sprite.setTextureRect(IntRect(210,400,200,200));
-		}
+			for (int i=0 ; i < N ; i++)
+			{
+				int y1 = (planets[i].type-1)*200, y2=y1+600;
+				planets1_sprite[i].setTextureRect(IntRect(200,y1,200,200));
+				planets2_sprite[i].setTextureRect(IntRect(200,y2,200,200));
+			}
 		if(timescore > 750)  
-		{
-			planet1_blue_sprite.setTextureRect(IntRect(420, 0, 200, 200));
-			planet2_blue_sprite.setTextureRect(IntRect(420, 0, 200, 200));
-
-			planet1_red_sprite.setTextureRect(IntRect(420,400,200,200));
-			planet2_red_sprite.setTextureRect(IntRect(420,400,200,200));
-		}	
+			for (int i=0 ; i < N ; i++)
+			{
+				int y1 = (planets[i].type-1)*200, y2=y1+600;
+				planets1_sprite[i].setTextureRect(IntRect(400,y1,200,200));
+				planets2_sprite[i].setTextureRect(IntRect(400,y2,200,200));
+			}	
 		if(timescore > 1000)  
 		{
-			planet1_blue_sprite.setTextureRect(IntRect(630, 0, 200, 200));
-			planet2_blue_sprite.setTextureRect(IntRect(630, 0, 200, 200));
-
-			planet1_red_sprite.setTextureRect(IntRect(630,400,200,200));
-			planet2_red_sprite.setTextureRect(IntRect(630,400,200,200));
-
+			for (int i=0 ; i < N ; i++)
+			{
+				int y1 = (planets[i].type-1)*200, y2=y1+600;
+				planets1_sprite[i].setTextureRect(IntRect(600,y1,200,200));
+				planets2_sprite[i].setTextureRect(IntRect(600,y2,200,200));
+			}
 			timescore=0;
 		} 
-
-		//////////////// выделение планет //////////////////
-
-
-
-
 		if (event.type == Event::MouseButtonPressed)
 			if (event.key.code == Mouse::Left)
-			{
-				if (event.mouseButton.x > planets[0].x && event.mouseButton.x < (planets[0].x + 200) && event.mouseButton.y > planets[0].y && event.mouseButton.y < (planets[0].y + 200) )
-				{
-
-					planets[0].state=1;
-					planets[1].state=0;
-					planets[2].state=0;
-
-				}
-				if (event.mouseButton.x > planets[1].x && event.mouseButton.x < (planets[1].x + 200) && event.mouseButton.y > planets[1].y && event.mouseButton.y < (planets[1].y + 200))
-				{
-					planets[0].state=0;
-					planets[1].state=1;
-					planets[2].state=0;
-				}
-
-				if (event.mouseButton.x > planets[2].x && event.mouseButton.x < (planets[2].x + 200) && event.mouseButton.y > planets[2].y && event.mouseButton.y < (planets[2].y + 200))
-				{
-					planets[0].state=0;
-					planets[1].state=0;
-					planets[2].state=1;
-				}
-
-			}
-
-
-			/////////атака планет и снятие выделения //////////
-
-
-
+				for (int i=0 ; i < N ; i++)
+					if (event.mouseButton.x > planets[i].x && event.mouseButton.x < (planets[i].x + 200) && event.mouseButton.y > planets[i].y && event.mouseButton.y < (planets[i].y + 200) )
+					{
+                    for(int j=0; j < N;j++)
+					planets[j].state=0;
+					planets[i].state=1;
+					}
 			if (event.type == Event::MouseButtonPressed)
 				if (event.key.code == Mouse::Right)
-				{
-					if (event.mouseButton.x > planets[0].x && event.mouseButton.x < (planets[0].x + 200) && event.mouseButton.y > planets[0].y && event.mouseButton.y < (planets[0].y + 200) )
-					{
-
-						if(planets[0].state==1)
-							planets[0].state=0;
-
-						if(planets[1].state==1)
-							move10=1;
-
-						if(planets[2].state==1)
-							move20=1;  
-
-					}
-					if (event.mouseButton.x > planets[1].x && event.mouseButton.x < (planets[1].x + 200) && event.mouseButton.y > planets[1].y && event.mouseButton.y < (planets[1].y + 200))
-					{
-
-						if(planets[1].state==1)
-							planets[1].state=0;
-
-						if(planets[0].state==1)
-							move01=1;
-
-						if(planets[2].state==1)
-							move20=1;
-
-					}
-
-					if (event.mouseButton.x > planets[2].x && event.mouseButton.x < (planets[2].x + 200) && event.mouseButton.y > planets[2].y && event.mouseButton.y < (planets[2].y + 200))
-					{
-
-						if(planets[2].state==1)
-							planets[2].state=0;
-
-						if(planets[0].state==1)
-							move02=1;
-
-						if(planets[1].state==1)
-							move12=1;
-
-					}
-
-				}
-/*
-				float dx,dy,y0,x0,x,y,dis0; 
-
-				if (move01 == 1)
-				{
-
-					x0=planets[1].x-planets[0].x;
-					y0=planets[1].y-planets[0].y;
-					dis0=sqrt(x0*x0+y0*y0);
-						dx=(x0/dis0);
-						dy=(y0/dis0);
-						
-	                    ship_sprite.setPosition(planets[0].x+100,planets[0].y);
-						if(dis>50)
-						{  
-							ship_sprite.move(t*dx, t*dy);
-							x=x0-t*dx;
-					        y=y0-t*dy;
-							dis=sqrt(x*x+y*y);
-							window.draw(ship_sprite);
-							window.display();
-						}
-						else
-							t=0;
-						
-                 
-
-				}
-*/
-				//////////////// условия вывода обычных планет ///////////////////////////
+                   for (int i=0 ; i < N ; i++)
+					if (event.mouseButton.x > planets[i].x && event.mouseButton.x < (planets[i].x + 200) && event.mouseButton.y > planets[i].y && event.mouseButton.y < (planets[i].y + 200) )
+				    	if(planets[i].state==1)
+							planets[i].state=0;
 				window.clear();
 				window.draw(fn_sprite);
-
-				if (planets[0].state==0)
-					window.draw(planet1_blue_sprite);
-
-				if (planets[1].state==0)
-					window.draw(planet1_green_sprite);
-
-				if (planets[2].state==0)
-					window.draw(planet1_red_sprite);
-
-				//////////////// условия вывода светящихся планет //////////////////////
-
-				if (planets[0].state==1)
-					window.draw(planet2_blue_sprite);
-
-				if (planets[1].state==1)
-					window.draw(planet2_green_sprite);
-
-				if (planets[2].state==1)
-					window.draw(planet2_red_sprite);
-
-				
-
+				for (int i=0 ; i < N ; i++)
+				{
+					if(planets[i].state==0)
+						window.draw(planets1_sprite[i]);
+					else
+						window.draw(planets2_sprite[i]);   
+				}
 				window.display();
 	}
-	return 0;
+}
+int main()
+{
+	int N=3;//////////////////////для изменение количества планет менять циферку здесь
+	struct planet  planets[3];///////////////////  и здесь (кроме того необходимо заполнить поля структуры)
+	begining(planets);
+	add_planets(planets,N);
 }
