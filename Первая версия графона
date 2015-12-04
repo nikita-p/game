@@ -5,12 +5,11 @@ using namespace sf;
 using namespace std;
 struct planet
 {
-	int name,x,y,ships,state,belong,type;
+	int x,y,ships,state,belong,type;
 };
 void begining(struct planet *planets)
 {   
 	///первая///
-	planets[0].name=0;
 	planets[0].state=0;
 	planets[0].ships=5;
 	planets[0].x=100;
@@ -18,26 +17,31 @@ void begining(struct planet *planets)
 	planets[0].belong=1;// Пренадлежность к игроку(1-синий,2-красный,0-свободна)
 	planets[0].type=1;//Один из трех типов планет(различия только визульные)
 	///вторая///
-	planets[1].name=1;
 	planets[1].state=0;
 	planets[1].ships=0;
 	planets[1].x=700;
 	planets[1].y=100;
-	planets[1].belong=0;
+	planets[1].belong=2;
 	planets[1].type=2;
 	///третья///
-	planets[2].name=2;
 	planets[2].state=0;
 	planets[2].ships=0;
 	planets[2].x=1000;
 	planets[2].y=450;
-	planets[2].belong=2;
+	planets[2].belong=3;
 	planets[2].type=3;
+	///четвертая///
+	planets[3].state=0;
+	planets[3].ships=0;
+	planets[3].x=300;
+	planets[3].y=50;
+	planets[3].belong=0;
+	planets[3].type=1;
 }
-void add_planets(struct planet  *planets,int N)
+void add_planets(struct planet  *planets, float *timescore, int N)
 {
-	RenderWindow window(VideoMode(1280,720),"1.0");  
-	////////фон//////////////////////////////
+	float time=*timescore;
+	RenderWindow window(VideoMode(1280,720),"1.0"); 
 
 	Image fn; //создаем объект Image (изображение)
 	fn.loadFromFile("images\\fn.jpg");//загружаем в него файл
@@ -48,14 +52,17 @@ void add_planets(struct planet  *planets,int N)
 	Sprite fn_sprite;//создаем объект Sprite(спрайт)
 	fn_sprite.setTexture(fn_texture);//передаём в него объект Texture (текстуры)
 	fn_sprite.setPosition(0, 0);//задаем начальные координаты появления спрайта
-	
+
 	Image _planets; 
 	_planets.loadFromFile("images\\planets.jpg");
 	_planets.createMaskFromColor(Color(0, 0, 0));
+
 	Texture planets_texture;
 	planets_texture.loadFromImage(_planets);
-	Sprite planets1_sprite[3];
-	Sprite planets2_sprite[3];
+
+	Sprite planets1_sprite[4];
+	Sprite planets2_sprite[4];
+
 	for(int i=0 ; i < N ; i++)
 	{
 		planets1_sprite[i].setTexture(planets_texture);
@@ -72,55 +79,43 @@ void add_planets(struct planet  *planets,int N)
 		}
 		if(planets[i].belong==2)
 		{
+			planets1_sprite[i].setColor(Color::Green);
+			planets2_sprite[i].setColor(Color::Green);
+		}
+		if(planets[i].belong==3)
+		{
 			planets1_sprite[i].setColor(Color::Red);
 			planets2_sprite[i].setColor(Color::Red);
 		}
 	}
+
 	Clock clock;
-	float timescore=0;
 	while (window.isOpen())
 	{
-		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
+		float time0 = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
 		clock.restart(); //перезагружает время
-		time = time/1000; //скорость игры
+		time0 = time0/1000; //скорость игры
 		Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-		timescore=timescore+time;
-		if(timescore > 250)  
-			for (int i=0 ; i < N ; i++)
-			{
-				int y1 = (planets[i].type-1)*200, y2=y1+600;
-				planets1_sprite[i].setTextureRect(IntRect(0,y1,200,200));
-				planets2_sprite[i].setTextureRect(IntRect(0,y2,200,200));
-			}
-		if(timescore > 500)  
-			for (int i=0 ; i < N ; i++)
-			{
-				int y1 = (planets[i].type-1)*200, y2=y1+600;
-				planets1_sprite[i].setTextureRect(IntRect(200,y1,200,200));
-				planets2_sprite[i].setTextureRect(IntRect(200,y2,200,200));
-			}
-		if(timescore > 750)  
-			for (int i=0 ; i < N ; i++)
-			{
-				int y1 = (planets[i].type-1)*200, y2=y1+600;
-				planets1_sprite[i].setTextureRect(IntRect(400,y1,200,200));
-				planets2_sprite[i].setTextureRect(IntRect(400,y2,200,200));
-			}	
-		if(timescore > 1000)  
+		int k=4,A=150;
+		time=time+time0;
+		*timescore=time;
+		for(int j=0;j<k;j++)
 		{
+            if(time > A*j)  
 			for (int i=0 ; i < N ; i++)
 			{
-				int y1 = (planets[i].type-1)*200, y2=y1+600;
-				planets1_sprite[i].setTextureRect(IntRect(600,y1,200,200));
-				planets2_sprite[i].setTextureRect(IntRect(600,y2,200,200));
+				int y1 = (planets[i].type-1)*200, y2=y1+600,x=j*200;
+				planets1_sprite[i].setTextureRect(IntRect(x,y1,200,200));
+				planets2_sprite[i].setTextureRect(IntRect(x,y2,200,200));
+				if((time > A*k)&&(i==N-1))
+					time=0;
 			}
-			timescore=0;
-		} 
+		}
 		if (event.type == Event::MouseButtonPressed)
 			if (event.key.code == Mouse::Left)
 				for (int i=0 ; i < N ; i++)
@@ -150,8 +145,10 @@ void add_planets(struct planet  *planets,int N)
 }
 int main()
 {
-	int N=3;//////////////////////для изменение количества планет менять циферку здесь
-	struct planet  planets[3];///////////////////  и здесь (кроме того необходимо заполнить поля структуры)
+	float timescore=0;
+	int N=4;//////////////////////для изменение количества планет менять циферку здесь
+	struct planet  planets[4];///////////////////  и здесь (кроме того необходимо заполнить поля структуры)
 	begining(planets);
-	add_planets(planets,N);
+	add_planets(planets,&timescore,N);
+	cout << timescore <<endl;
 }
