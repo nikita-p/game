@@ -1,37 +1,8 @@
-//#include <SFML/Graphics.hpp>
 #include <math.h>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-
-using namespace std;
-int ACTIVE_PLAYER;
-const int NUM_PLANETS=3, NUM_TYPES=2; //Количество типов кораблей
-
-struct planets
-{
-    int x_place;
-    int y_place;
-    struct group_ships* defenders;
-};
-
-struct ships_type   //Тип корабля
-{
-    int attack;     // 0<атака_корабля<100
-    int walking_ability;
-    //sf::Sprite sprite; Для отрисовки кораблей
-    //int hp; Если кто-то не может без этого, то можно добавить
-};
-
-struct group_ships //Группы кораблей
-{
-    int player;
-    int amount_ships;
-    int walking_ability;
-    int current_position[2];
-    int next_position[2];
-    int ships_types[NUM_TYPES];
-};
+#include "header.h"
 
 struct ships_type* create_list_types ()
 //Здесь создаются типы кораблей. Нужно сделать один раз в начале игры.
@@ -44,23 +15,27 @@ struct ships_type* create_list_types ()
     return list;
 }
 
-struct group_ships** create_list_groups(struct planets* all_planets)
+struct group_ships* create_list_groups(struct planets* all_planets) //Проверено, работает ++
 //Функция инициализирует список групп. Нужно сделать один раз в начале игры + идёт сопоставление планет и кораблей на них
 {
-    struct group_ships** list_groups = new struct group_ships* [NUM_PLANETS+1];
+    struct group_ships* list_groups = new struct group_ships [NUM_PLANETS+1];
     for(int i=0;i<NUM_PLANETS;i++)
     {
-        list_groups[i] = new struct group_ships;
-        all_planets[i].defenders=list_groups[i];
+        all_planets[i].defenders=&list_groups[i];
+        //Для последующего удаления или преобразования
+        list_groups[i].picture.setFillColor(sf::Color(i*55, 200-50*i, 50+10*i));
+        list_groups[i].picture.setPosition(all_planets[i].x_place,all_planets[i].y_place);
+        list_groups[i].picture.setRadius(50);
+        //Конец
     }
-    list_groups[NUM_PLANETS] == NULL;
+    list_groups[NUM_PLANETS].amount_ships = -1;
     return list_groups;
 }
 
-struct planets create_ship(struct planets creator, int type_index, int walk_ab)
+struct planets create_ship(struct planets creator, int type_index, int walk_ab) //Проверено, работает ++
 //Создание корабля. Список планет, какой тип (int индекс этого типа)!, сколько может пройти, куда поставить.
 {
-    creator.defenders->player=ACTIVE_PLAYER; // !!
+    creator.defenders->player=1; // !!
     creator.defenders->current_position[0] = creator.x_place;
     creator.defenders->current_position[1] = creator.y_place;
     creator.defenders->next_position[0] = creator.defenders->current_position[0];
@@ -72,14 +47,20 @@ struct planets create_ship(struct planets creator, int type_index, int walk_ab)
     return creator;
 }
 
+int amount_groups_ships(struct group_ships** all_groups)
+//Сколько групп кораблей существует
+{
+    int len =0;
+    while(all_groups[len]!=NULL)
+        len++;
+    return len;
+}
+
 struct group_ships** add_new_group(struct group_ships** all_groups)
 //Создаю новую группу кораблей. Вывожу лист групп. Нулевое место в листе групп будет занимать новая группа.
 {
-    int len=0; //Нужно проверить сколько элементов в группе. Сомнительно, но в create_list_groups всё проставил как надо :((
-    while(all_groups[len]!=NULL)
-        len++;
-    //if(len==0)
-    //    return all_groups;
+    int len=0; //Нужно проверить сколько групп есть.
+    len = amount_groups_ships(all_groups);
     struct group_ships** new_all_groups = new struct group_ships* [len+1];
     new_all_groups[0]=new struct group_ships;
     for (int i=1; i<len+1;i++)
@@ -91,12 +72,8 @@ struct group_ships** add_new_group(struct group_ships** all_groups)
 struct group_ships** delete_group(struct group_ships** all_groups, struct group_ships* trash)
 //Удаляю группу кораблей. Вывожу лист групп.
 {
-    int len=0; //Нужно проверить сколько элементов в группе. Сомнительно, но в create_list_groups всё проставил как надо :((
+    int len=amount_groups_ships(all_groups); //Нужно проверить сколько элементов в группе. Сомнительно, но в create_list_groups всё проставил как надо :((
     int index=0; //Номер удаляемой строки
-    while(all_groups[len]!=NULL)
-        len++;
-    //if(len==0)
-    //    return all_groups;
     struct group_ships** new_all_groups = new struct group_ships* [len-1];
     for (int i=1; i<len;i++)
         if(trash==all_groups[i])
@@ -144,22 +121,22 @@ struct group_ships** add_ship_in_group (struct group_ships** all_groups, int pos
     return all_groups;
 }
 
-struct group_ships step_one_ships(struct group_ships one)
+struct group_ships* step_one_ships(struct group_ships* one)
 //Беспрепятственный шаг полёта группы кораблей
 {
-    if(one.next_position == one.current_position)
+    if(one->next_position == one->current_position)
         return one;
-    int delta_x = (one.next_position[0]) - (one.current_position[0]);
-    int delta_y = (one.next_position[1]) - (one.current_position[1]);
+    int delta_x = (one->next_position[0]) - (one->current_position[0]);
+    int delta_y = (one->next_position[1]) - (one->current_position[1]);
     int z = sqrt(delta_x*delta_x + delta_y*delta_y);
-    if (z<=one.walking_ability)
+    if (z<=one->walking_ability)
         {
-            one.current_position[0] = one.next_position[0];
-            one.current_position[1] = one.next_position[1];
+            one->current_position[0] = one->next_position[0];
+            one->current_position[1] = one->next_position[1];
             return one;
         }
-    one.current_position[0] = one.current_position[0] + one.walking_ability*(delta_y/z);
-    one.current_position[1] = one.current_position[1] + one.walking_ability*(delta_y/z);
+    one->current_position[0] = one->current_position[0] + one->walking_ability*(delta_y/z);
+    one->current_position[1] = one->current_position[1] + one->walking_ability*(delta_y/z);
     return one;
 }
 
@@ -209,23 +186,9 @@ struct group_ships** battle(struct group_ships** start_groups, struct group_ship
     return start_groups;
 }
 
-struct planets seize(struct group_ships* new_kings, struct planets change_planet)
+struct planets* seize(struct group_ships* new_kings, struct planets* change_planet)
 //Захват планеты. Необходимо сменить defenders у этой планеты
 {
-    change_planet.defenders=new_kings;
+    change_planet->defenders=new_kings;
     return change_planet;
-}
-
-
-
-
-
-int main() //Давайте проверять.
-{
-    struct planets* all_planets =new struct planets [NUM_PLANETS];
-    struct ships_type* all_types = create_list_types();
-    struct group_ships** all_groups = create_list_groups(all_planets);
-    all_planets[2] = create_ship(all_planets[2], 1, 200);
-    //...
-    return 0;
 }
