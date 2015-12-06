@@ -1,0 +1,53 @@
+  Sprite fn_sprite;
+
+	Sprite planets1_sprite[4];
+	Sprite planets2_sprite[4];
+
+	
+	
+	Image fn;
+	fn.loadFromFile("images\\fn.jpg");
+
+	Texture fn_texture;
+	fn_texture.loadFromImage(fn);
+
+	fn_sprite.setTexture(fn_texture);
+	fn_sprite.setPosition(0, 0);
+
+	Image _planets;
+	_planets.loadFromFile("images\\planets.jpg");
+	_planets.createMaskFromColor(Color(0, 0, 0));
+
+	Texture planets_texture;
+	planets_texture.loadFromImage(_planets);
+
+
+
+	for (int i = 0; i < N; i++)
+	{
+		planets1_sprite[i].setTexture(planets_texture);
+		planets1_sprite[i].setPosition(planets[i].x, planets[i].y);
+
+		planets2_sprite[i].setTexture(planets_texture);
+		planets2_sprite[i].setPosition(planets[i].x, planets[i].y);
+
+		int y1 = (planets[i].type - 1) * 200, y2 = y1 + 600;
+		planets1_sprite[i].setTextureRect(IntRect(0, y1, 200, 200));
+		planets2_sprite[i].setTextureRect(IntRect(0, y2, 200, 200));
+
+		if (planets[i].belong == 1)
+		{
+			planets1_sprite[i].setColor(Color::Cyan);
+			planets2_sprite[i].setColor(Color::Cyan);
+		}
+		if (planets[i].belong == 2)
+		{
+			planets1_sprite[i].setColor(Color::Green);
+			planets2_sprite[i].setColor(Color::Green);
+		}
+		if (planets[i].belong == 3)
+		{
+			planets1_sprite[i].setColor(Color::Red);
+			planets2_sprite[i].setColor(Color::Red);
+		}
+	}
