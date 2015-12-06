@@ -1,0 +1,35 @@
+struct planet
+{
+	int x, y, ships, state, belong, type;
+};
+void begining(struct planet *planets)
+{
+	///первая///
+	planets[0].state = 0;
+	planets[0].ships = 5;
+	planets[0].x = 100;
+	planets[0].y = 400;
+	planets[0].belong = 1;// Пренадлежность к игроку(1-синий,2-красный,0-свободна)
+	planets[0].type = 1;//Один из трех типов планет(различия только визульные)
+	///вторая///
+	planets[1].state = 0;
+	planets[1].ships = 0;
+	planets[1].x = 700;
+	planets[1].y = 100;
+	planets[1].belong = 2;
+	planets[1].type = 2;
+	///третья///
+	planets[2].state = 0;
+	planets[2].ships = 0;
+	planets[2].x = 1000;
+	planets[2].y = 450;
+	planets[2].belong = 3;
+	planets[2].type = 3;
+	///четвертая///
+	planets[3].state = 0;
+	planets[3].ships = 0;
+	planets[3].x = 300;
+	planets[3].y = 50;
+	planets[3].belong = 0;
+	planets[3].type = 1;
+}
