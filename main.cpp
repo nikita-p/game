@@ -4,21 +4,27 @@ using namespace sf;
 
 int main()
 {
-    RenderWindow window(VideoMode(X_MAX,Y_MAX),"OK, It is a start");
-    struct planets* list = new struct planets[2];
-    list = create();
-    while(window.isOpen())
+    int activePlayer = 1;
+    struct planets* list_planets = new struct planets[NUM_PLANETS];
+    for(int i=0;i<NUM_PLANETS;i++)
     {
-        Event event;
-        while(window.pollEvent(event))
-        {
-            if(event.type == Event::Closed)
-                window.close();
-        }
-        window.clear();
-        for(int i=0; i<NUM_PLANETS;i++)
-            window.draw(list[i].picture);
-        window.display();
+        list_planets[i].index=i;
+        list_planets[i].x_place=X_MAX*(i+1)/(NUM_PLANETS+1);
+        list_planets[i].y_place=Y_MAX*(i+1)/(NUM_PLANETS+1);
     }
+    struct ships_type* all_types = create_list_types();
+    struct group_ships* all_groups = create_list_groups(list_planets);
+    for(int i = 0; i<72; i++)
+    {
+        list_planets[i%3]=create_ship(list_planets[i%3],i%2,200, activePlayer);
+    }
+    all_groups = add_new_group(all_groups); //Добавил пустую группу
+    all_groups = delete_empty_groups(all_groups); //Удалил пустые группы
+    int a[2] = {3, 0}; //Типичный массив кораблей
+    all_groups = add_ship_in_group(all_groups, 0, 2, a, all_types); //Добавил корабли a из группы 0 в группу 2
+    all_groups[1].next_position[0] = 1; //Задаю цель некоторой группе.
+    all_groups[1].next_position[1] = 1;
+    all_groups = step_one_ships(all_groups); //Поменял текущую позицию.
+    int len = amount_groups_ships(all_groups);
     return 0;
 }
