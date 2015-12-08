@@ -14,7 +14,7 @@ int const SLUP_E = 600, //Start level-up price of economy (1 lvl->2 lvl)
             PR_E = 1.5,//-доходности
             PS = 80;//Price of ship
 
-int level_up(struct planets * list, struct players * list_p, int planet, int building)//Функция прокачки здания. Возвращает 0 - нужно больше золота, 1 - успешно. Должна вызываться при нажатии соотв. кнопки
+int level_up(struct planets * list, struct players * list_p, int planet, int building, int ACTIVE_PLAYER)//Функция прокачки здания. Возвращает 0 - нужно больше золота, 1 - успешно. Должна вызываться при нажатии соотв. кнопки
 {
     int cost;//Стоимость
     switch (building)
@@ -43,17 +43,18 @@ void recount(struct planets * list)//Обновление показателей планет. Должна вызыв
     for (int i = 0; i < NUM_PLANETS; i++){
         list[i].def = (int)SD*pow(PR_D, list[i].buildings[1]);
         list[i].add_ships = (int)SA*pow(PR_A, list[i].buildings[2]);
-        list[i].res = (int)SE*pow(PR_E, list[i].buildings[0]);
+        list[i].res = (int)SR*pow(PR_E, list[i].buildings[0]);
     }
 }
 
-int build_ship(struct planets * list, struct players * list_p, int planet, int count)
+int build_ship(struct planets * list, struct players * list_p, int planet, int count, int ACTIVE_PLAYER, int type)
 {
     if ((list_p[ACTIVE_PLAYER].gold >= PS * count) && (list[planet].add_ships >= count))
     {
         list_p[ACTIVE_PLAYER].gold = list_p[ACTIVE_PLAYER].gold - count * PS;
         list[planet].add_ships = list[planet].add_ships - count;
-        list[planet].attack_ships = list[planet].attack_ships + count;
+        list[planet].defenders->amount_ships += count;
+        list[planet].defenders->ships_types[type]+=count;
         return 1;
     }
     return 0;

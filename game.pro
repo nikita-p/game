@@ -1,18 +1,21 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-12-01T12:47:40
-#
-#-------------------------------------------------
-
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = game
 TEMPLATE = app
+CONFIG -= qt
+CONFIG += console
+SOURCES += \
+    ships_in_space.cpp \
+    main.cpp \
+    economy.cpp \
+    graph.cpp \
+    menu.cpp
 
+LIBS += -L/home/nikitap/SFML-2.3.2/
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+CONFIG (release, debug|release): LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window -lsfml-system
 
-HEADERS  += mainwindow.h
+CONFIG (debug, debug|release): LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window -lsfml-system
+
+INCLUDEPATH += /home/nikitap/SFML-2.3.2/include
+DEPENDPATH += /home/nikitap/SFML-2.3.2/include
+
+HEADERS += \
+    header.h

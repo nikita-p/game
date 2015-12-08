@@ -24,7 +24,7 @@ struct group_ships* create_list_groups(struct planets* all_planets) //Прове
         all_planets[i].defenders=&list_groups[i];
         //Для последующего удаления или преобразования
         list_groups[i].picture.setFillColor(sf::Color(i*55, 200-50*i, 50+10*i));
-        list_groups[i].picture.setPosition(all_planets[i].x_place,all_planets[i].y_place);
+        list_groups[i].picture.setPosition(all_planets[i].x,all_planets[i].y);
         list_groups[i].picture.setRadius(50);
         //Конец
         list_groups[i].amount_ships = 0;
@@ -39,8 +39,8 @@ struct planets create_ship(struct planets creator, int type_index, int walk_ab, 
 //Создание корабля. Список планет, какой тип (int индекс этого типа)!, сколько может пройти, куда поставить.
 {
     creator.defenders->player=activePlayer; // !!
-    creator.defenders->current_position[0] = creator.x_place;
-    creator.defenders->current_position[1] = creator.y_place;
+    creator.defenders->current_position[0] = creator.x;
+    creator.defenders->current_position[1] = creator.y;
     creator.defenders->next_position[0] = creator.defenders->current_position[0];
     creator.defenders->next_position[1] = creator.defenders->current_position[1];
     creator.defenders->ships_types[type_index] ++;
@@ -220,11 +220,11 @@ struct group_ships* battle(struct group_ships* start_groups, int i_active, int  
     return start_groups;
 }
 
-/*
+
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet)
 //Захват планеты. Необходимо сменить defenders у этой планеты
 {
     change_planet->defenders=new_kings;
     return change_planet;
 }
-*/
+
