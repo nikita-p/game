@@ -72,7 +72,7 @@ struct group_ships* step_one_ships(struct group_ships* allGroups);
 int check_index (int* index_active, int* index_passive, int array_active[NUM_TYPES], int array_passive[NUM_TYPES]);
 //Ищем лучший тип кораблей, который есть у противников
 
-struct group_ships* battle(struct group_ships* start_groups, struct group_ships* active, struct group_ships* passive, struct ships_type* all_types);
+struct group_ships* battle(struct group_ships* start_groups, int i_active, int  i_passive, struct ships_type* all_types);
 //Это сам бой между группами кораблей. Выбираем самых сильных и сталкиваем между собой, убиваем проигравший корабль :(
 
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet);

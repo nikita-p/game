@@ -173,7 +173,6 @@ struct group_ships* step_one_ships(struct group_ships* allGroups) //Вроде �
     return allGroups;
 }
 
-/*
 int check_index (int* index_active, int* index_passive, int array_active[NUM_TYPES], int array_passive[NUM_TYPES])
 //Ищем лучший тип кораблей, который есть у противников
 {
@@ -187,13 +186,14 @@ int check_index (int* index_active, int* index_passive, int array_active[NUM_TYP
     return 0;
 }
 
-struct group_ships** battle(struct group_ships** start_groups, struct group_ships* active, struct group_ships* passive, struct ships_type* all_types)
+
+struct group_ships* battle(struct group_ships* start_groups, int i_active, int  i_passive, struct ships_type* all_types)
 //Это сам бой между группами кораблей. Выбираем самых сильных и сталкиваем между собой, убиваем проигравший корабль :(
 {
     int index_active = 0, index_passive = 0, delta_attack = 0;
     srand(time(NULL));
-    check_index(&index_active, &index_passive, active->ships_types, passive->ships_types);
-    while(active->amount_ships!=0 && passive->amount_ships != 0)
+    check_index(&index_active, &index_passive, start_groups[i_active].ships_types, start_groups[i_passive].ships_types);
+    while(start_groups[i_active].amount_ships!=0 && start_groups[i_passive].amount_ships != 0)
     {
 
        delta_attack = all_types[index_active].attack - all_types[index_passive].attack;
@@ -201,25 +201,26 @@ struct group_ships** battle(struct group_ships** start_groups, struct group_ship
        int p = rand()%101; //А теперь бросаем кость.
        if (p<P_win_attack)
        {
-           passive->ships_types[index_passive] --;
-           active->amount_ships --;
+           start_groups[i_active].ships_types[index_passive] --;
+           start_groups[i_active].amount_ships --;
        }
        if (p>=P_win_attack)
        {
-           active->ships_types[index_active] --;
-           active->amount_ships --;
+           start_groups[i_passive].ships_types[index_active] --;
+           start_groups[i_passive].amount_ships --;
        }
-       if(active->ships_types[index_active]==0 || passive->ships_types[index_passive]==0)
-            check_index(&index_active, &index_passive, active->ships_types, passive->ships_types);
+       if(start_groups[i_active].ships_types[index_active]==0 || start_groups[i_passive].ships_types[index_passive]==0)
+            check_index(&index_active, &index_passive, start_groups[i_active].ships_types, start_groups[i_passive].ships_types);
     }
     //Расформировать
-    if(active->amount_ships==0)
-        start_groups = delete_group(start_groups,active);
-    if(passive->amount_ships==0)
-        start_groups = delete_group(start_groups,passive);
+    if(start_groups[i_active].amount_ships==0)
+        start_groups = delete_one_group(start_groups,i_active);
+    if(start_groups[i_passive].amount_ships==0)
+        start_groups = delete_one_group(start_groups,i_passive);
     return start_groups;
 }
 
+/*
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet)
 //Захват планеты. Необходимо сменить defenders у этой планеты
 {

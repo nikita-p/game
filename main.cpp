@@ -26,5 +26,6 @@ int main()
     all_groups[1].next_position[1] = 1;
     all_groups = step_one_ships(all_groups); //Поменял текущую позицию.
     int len = amount_groups_ships(all_groups);
+    all_groups = battle(all_groups,1,2,all_types); //Битва
     return 0;
 }
