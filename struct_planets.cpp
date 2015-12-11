@@ -2,7 +2,7 @@
 
 using namespace sf;
 
-struct planet 
+struct planets
 {
   int x, y, ships, state, belong, type;
 };
