@@ -7,8 +7,8 @@ int main()
 	float timescore = 0;
 	int N = NUM_PLANETS;//////////////////////для изменение количества планет менять циферку здесь
 	struct planets  list[NUM_PLANETS];///////////////////  и здесь (кроме того необходимо заполнить поля структуры)
-	begining(list);
-    Sprite fn_sprite;
+	beginning(list);
+        Sprite fn_sprite;
 	Sprite planets1_sprite[NUM_PLANETS];
 	Sprite planets2_sprite[NUM_PLANETS];
 	Texture fn_texture;
