@@ -3,6 +3,13 @@
 int main()
 {
     int activePlayer = 1;
+	struct players* players = new struct players[MAX_PLAYERS + 1];
+	{
+		for(int k = 1; k < MAX_PLAYERS + 1; k++)
+		{	
+			players[k].gold = START_MONEY;
+		}
+	}
 
 
     int Player_color[3] = {100, 100, 100}; //задаем массив цветов (для каждого игрока будут свои значения)
@@ -11,16 +18,16 @@ int main()
     int Player_Money[7] = {0, 10000, 1500, 3600, 3400, 2200, 1100}; // массив на 7(!!!) элементов, потому что Now_Player начинается с 1
 
     float timescore = 0;
-    int N = 4;
-    struct planets planets[4]; //Создание структуры планет
+    int N = NUM_PLANETS;
+    struct planets planets[NUM_PLANETS]; //Создание структуры планет
     begining(planets);
 
         Texture fon_block;
-        fon_block.loadFromFile("files/menu_texture.png"); //объявляем и загружаем текстуру из файла
+        fon_block.loadFromFile("Textures/fon_block.jpg"); //объявляем и загружаем текстуру из файла
         //block.setTextureRect(IntRect(0,0,1200,760)); //из файла вырезается прямоугольник и берется в качестве текстуры(размеры - почти вся картинка)
 
         Font font;
-        font.loadFromFile("files/menu_font.ttf"); //загрузка шрифта из файла
+        font.loadFromFile("Fonts/font_block.ttf"); //загрузка шрифта из файла
 
         //Image fn;
         //fn.loadFromFile("files/background_image.jpg");
@@ -39,8 +46,8 @@ int main()
         Texture planets_texture;
         planets_texture.loadFromFile("files/planets_image.png");
 
-        Sprite planets1_sprite[4];
-        Sprite planets2_sprite[4];
+        Sprite planets1_sprite[NUM_PLANETS];
+        Sprite planets2_sprite[NUM_PLANETS];
 
         for (int i = 0; i < N; i++)
         {
@@ -119,10 +126,14 @@ int main()
                         for(int j = 0; j < 3; j++)
                         {
                             if(Click_mouse(event, (2*j+3) * base_lenght, (2*j+4) * base_lenght, Y_MAX, Y_MAX - base_height))
-                            {
-                                Buildings_level[j] = Buildings_level[j] + 1; // уровень повышается на один
+                            {	
+								if(activePlayer == planets[Active_Planet(planets)].belong)
+								{
+									level_up(planets, players, Active_Planet(planets), j, activePlayer);
+								}
+                                //Buildings_level[j] = Buildings_level[j] + 1; // уровень повышается на один
                                 Player_Money[activePlayer] -= Buildings_level_up_cost[j]; //Никита играется (наверное, это нужно оставить) :)
-                                Buildings_level_up_cost[j] = Buildings_level_up_cost[j] * 2; // цена поднятия уровня увеличивается в 2 раза(если будет массив параметров, то можно умножать на j элемент)
+                                //Buildings_level_up_cost[j] = Buildings_level_up_cost[j] * 2; // цена поднятия уровня увеличивается в 2 раза(если будет массив параметров, то можно умножать на j элемент)
                             }
                         }
                         break;
@@ -169,7 +180,7 @@ int main()
             }
             window.clear(Color::Black);
             add_planets(&window, event, &fn_sprite, planets1_sprite, planets2_sprite, planets, &timescore, N);
-            Draw_panel(&window, Color(Player_color[0],Player_color[1],Player_color[2]), &fon_block, font, activePlayer, Player_color, Buildings_level, Buildings_level_up_cost,Player_Money);
+            Draw_panel(&window, Color(Player_color[0],Player_color[1],Player_color[2]), &fon_block, font, activePlayer, Player_color, Buildings_level, Buildings_level_up_cost, Player_Money, &(planets[activePlayer]));
             window.display();
         }
 }

@@ -8,14 +8,17 @@
 using namespace std;
 using namespace sf;
 
-const int X_MAX=1280, Y_MAX=720, NUM_PLANETS = 3, NUM_TYPES=2, MAX_PLAYERS = 6, font_size = Y_MAX/36; // =20
+const int X_MAX=1280, Y_MAX=720, NUM_PLANETS = 3, NUM_TYPES=2, START_MONEY = 2000, MAX_PLAYERS = 6, font_size = Y_MAX/36; // =20
 //Количество типов кораблей(NUM_TYPES) Размеры экрана(X_MAX,Y_MAX), число игроков
 const float base_lenght = X_MAX/16, base_height = Y_MAX/20; // base-lenght=80 пикселей base-height=36 пикселя
 const float base_ramka = 2;
 
 struct players
 {
+	int number; // номер
     int gold;//Счёт игрока
+	int color[3]; //цвет
+
 };
 struct planets
 {
@@ -60,7 +63,7 @@ void Draw_block(float X, float Y, float lenght, float height, float ramka, Color
 void Draw_text(float X, float Y, float lenght, float height, Color color, char* string, int size, RenderWindow* window, Font font);
 //string и size отвечают за текст и размер шрифта, font - за шрифт(в main загрузим из файла)
 
-void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Now_Player, int Player_color[], int Buildings_level[], int Buildings_level_up_cost[], int Player_Money[]);
+void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Now_Player, int Player_color[], int Buildings_level[], int Buildings_level_up_cost[], int Player_Money[], struct planets* planets);
 // из блоков и текста собирается панелька
 
 bool Click_mouse(Event event, float x_left, float x_right, float y_up, float y_down);
@@ -114,6 +117,8 @@ struct group_ships* battle(struct group_ships* start_groups, int i_active, int  
 
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet);
 //Захват планеты. Необходимо сменить defenders у этой планеты
+
+int Active_Planet(struct planets* Planets); ////поиск активной планеты
 
 
 #endif // HEADER_H

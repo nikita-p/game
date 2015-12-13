@@ -1,6 +1,6 @@
 #include "header.h"
 #include "math.h"
-int const SLUP_E = 600, //Start level-up price of economy (1 lvl->2 lvl)
+double const SLUP_E = 600, //Start level-up price of economy (1 lvl->2 lvl)
             SLUP_D = 900, //--defense
             SLUP_A = 1200, //--add-ship building
             PRP_E = 1.6, //Показатель роста стоимости прокачки экономики

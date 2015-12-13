@@ -46,7 +46,7 @@ void Draw_text(float X, float Y, float lenght, float height, Color color, char* 
 
     window->draw(text_block);
 }
-void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Now_Player, int Player_color[], int Buildings_level[], int Buildings_level_up_cost[], int Player_Money[])
+void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Now_Player, int Player_color[], int Buildings_level[], int Buildings_level_up_cost[], int Player_Money[], struct planets* planets)
 // из блоков и текста собирается панелька
 {
     for(int i = 0; i < 6; i++)
@@ -64,7 +64,7 @@ void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font
 
     for(int j = 0; j < 3; j++)
     {
-        Draw_text(2 * (j + 1) * base_lenght + 1.6 * base_lenght, Y_MAX - 2 * base_height + base_ramka, 0.4 * base_lenght, base_height, Color::White, int_to_string(Buildings_level[j]), font_size, window, font); // в аргументе int_to_string стоит уровень здания, надо сделать еще привязку к игроку и планете
+        Draw_text(2 * (j + 1) * base_lenght + 1.6 * base_lenght, Y_MAX - 2 * base_height + base_ramka, 0.4 * base_lenght, base_height, Color::White, int_to_string(planets->buildings[j]), font_size, window, font); // в аргументе int_to_string стоит уровень здания, надо сделать еще привязку к игроку и планете
         Draw_text(3 * base_lenght + 2 * j * base_lenght + base_ramka, Y_MAX - base_height + base_ramka, base_lenght - 2 * base_ramka, base_height, Color::White, "Level up", font_size, window, font);
         Draw_text(2 * base_lenght + 2 * j * base_lenght + base_ramka, Y_MAX - base_height + base_ramka, base_lenght - 2 * base_ramka, base_height, Color::White, int_to_string(Buildings_level_up_cost[j]), font_size, window, font);
     }
@@ -77,3 +77,14 @@ bool Click_mouse(Event event, float x_left, float x_right, float y_up, float y_d
     return (event.mouseButton.x > x_left && event.mouseButton.x < x_right && event.mouseButton.y > y_down && event.mouseButton.y < y_up);
 }
 
+int Active_Planet(struct planets* Planets) //поиск активной планеты
+{
+	for(int i = 0; i < NUM_PLANETS; i++)
+	{
+		if(Planets[i].state == 1)
+		{
+			return i; // вернет индекс активной(выделенной) планеты
+		}
+	}
+	return -1; //не найдено
+}
