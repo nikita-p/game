@@ -58,10 +58,10 @@ void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font
     Draw_block(X_MAX - 2 * base_lenght, Y_MAX - 2 * base_height, 2 * base_lenght, 2 * base_height, base_ramka, Color(Player_color[0],Player_color[1],Player_color[2]), window, fon_block);
 
     Draw_text(X_MAX - 2 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 2 * base_lenght - 2 * base_ramka, 2 * base_height - 2 * base_ramka, Color::White, "\tNext\n\tPlayer" , 1.25 * font_size, window, font);
-    Draw_text(2 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 4 * base_lenght - 2 * base_ramka, 4 * base_height - 2 * base_ramka, Color::White, "Economic's level", 0.9 * font_size, window, font);
-    Draw_text(4 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 4 * base_lenght - 2 * base_ramka, 4 * base_height - 2 * base_ramka, Color::White, "Barrack's level", 0.9 * font_size, window, font);
-    Draw_text(6 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 4 * base_lenght - 2 * base_ramka, 4 * base_height - 2 * base_ramka, Color::White, "Defense's level", 0.9 * font_size, window, font);
-
+    Draw_text(2 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 3.6 * base_lenght - 2 * base_ramka, 4 * base_height - 2 * base_ramka, Color::White, "Economic's level", 0.9 * font_size, window, font);
+    Draw_text(4 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 3.6 * base_lenght - 2 * base_ramka, 4 * base_height - 2 * base_ramka, Color::White, "Barrack's level", 0.9 * font_size, window, font);
+    Draw_text(6 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 3.6 * base_lenght - 2 * base_ramka, 4 * base_height - 2 * base_ramka, Color::White, "Defense's level", 0.9 * font_size, window, font);
+	Draw_text(8 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 3.6 * base_lenght + 2 * base_ramka, base_height - 2 * base_ramka, Color::White, "Count of ships", 0.9 * font_size, window, font);
     for(int j = 0; j < 3; j++)
     {
         Draw_text(2 * (j + 1) * base_lenght + 1.6 * base_lenght, Y_MAX - 2 * base_height + base_ramka, 0.4 * base_lenght, base_height, Color::White, int_to_string(planets->buildings[j]), font_size, window, font); // в аргументе int_to_string стоит уровень здания, надо сделать еще привязку к игроку и планете
@@ -70,6 +70,10 @@ void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font
     }
     Draw_block(0, Y_MAX - 2 * base_height, 2*base_lenght, 2 * base_height, base_ramka, Color(Player_color[0],Player_color[1],Player_color[2]), window, fon_block);
     Draw_text(0 + base_ramka, Y_MAX - 2 * base_height + base_ramka, 2 * base_lenght - 2 * base_ramka, 2 * base_height - 2 * base_ramka, Color::White, int_to_string(Player_Money[Now_Player]), 2*font_size, window, font); // как здесь сделана привязка к деньгам каждого игрока, так и нужно сделать в уровнях зданий и, впоследствии, с кораблями
+	Draw_text((8 + 1.4) * base_lenght, Y_MAX - 2 * base_height + base_ramka, 0.6 * base_lenght, base_height, Color::White, int_to_string(115), font_size, window, font);
+	Draw_text(8 * base_lenght +  base_ramka, Y_MAX - base_height + base_ramka, 2 * base_lenght, base_height, Color::White, "\tBuy", font_size, window, font);
+	Draw_text(9 * base_lenght +  base_ramka, Y_MAX - base_height + base_ramka, 2 * base_lenght, base_height, Color::White, "\tSell", font_size, window, font);
+
 
 }
 bool Click_mouse(Event event, float x_left, float x_right, float y_up, float y_down) // функция, возвращающая true, если курсор мыши находится в определенной области
