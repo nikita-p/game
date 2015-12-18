@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <time.h>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 using namespace sf;
@@ -16,7 +18,7 @@ const float base_ramka = 2;
 struct players
 {
 	int number; // номер
-    int gold;//Счёт игрока
+    int gold;   //Счёт игрока
 	int color[3]; //цвет
 
 };
@@ -53,6 +55,7 @@ struct group_ships //Группы кораблей
     CircleShape picture;
 };
 
+
 char* int_to_string(int N); //функция перевода инта в строку
 
 void Draw_block(float X, float Y, float lenght, float height, float ramka, Color color, RenderWindow* window, Texture* fon_block);
@@ -77,7 +80,7 @@ void recount(struct planets * list);
 
 int build_ship(struct planets * list, struct players * list_p, int planet, int count, int ACTIVE_PLAYER, int type);
 
-void begining(struct planets *planets);
+void begining(struct planets *planets, players *players);
 
 void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N);
 

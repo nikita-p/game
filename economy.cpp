@@ -3,20 +3,20 @@
 double const SLUP_E = 600, //Start level-up price of economy (1 lvl->2 lvl)
             SLUP_D = 900, //--defense
             SLUP_A = 1200, //--add-ship building
-            PRP_E = 1.6, //Показатель роста стоимости прокачки экономики
-            PRP_D = 1.5, //--защиты
-            PRP_A = 1.4, //--казармы
-            SD = 5, //Показатель защиты 1-го уровня
-            SA = 5, //Сколько можно построить за ход кораблей на 1-м уровне
-            SR = 500, //Доходность планеты 1-го уровня
-            PR_D = 1.3,//Показатель роста защиты при прокачке
-            PR_A = 1.2,//--казармы
-            PR_E = 1.5,//-доходности
+            PRP_E = 1.6,
+            PRP_D = 1.5,
+            PRP_A = 1.4,
+            SD = 5,
+            SA = 5,
+            SR = 500,
+            PR_D = 1.3,
+            PR_A = 1.2,
+            PR_E = 1.5,
             PS = 80;//Price of ship
 
-int level_up(struct planets * list, struct players * list_p, int planet, int building, int ACTIVE_PLAYER)//Функция прокачки здания. Возвращает 0 - нужно больше золота, 1 - успешно. Должна вызываться при нажатии соотв. кнопки
+int level_up(struct planets * list, struct players * list_p, int planet, int building, int ACTIVE_PLAYER)
 {
-    int cost;//Стоимость
+    int cost;
     switch (building)
     {
     case 0:
@@ -33,12 +33,12 @@ int level_up(struct planets * list, struct players * list_p, int planet, int bui
     if (list_p[ACTIVE_PLAYER].gold >= cost){
         list[planet].buildings[building]++;
         list_p[ACTIVE_PLAYER].gold = list_p[ACTIVE_PLAYER].gold - cost;
-        return 1;
+        return cost;
     }
-    return 0;
+    return cost;
 }
 
-void recount(struct planets * list)//Обновление показателей планет. Должна вызываться в начале нового круга - благодаря этому, эффект от прокачки почувствуется только на след. ходе
+void recount(struct planets * list)
 {
     for (int i = 0; i < NUM_PLANETS; i++){
         list[i].def = (int)SD*pow(PR_D, list[i].buildings[1]);
