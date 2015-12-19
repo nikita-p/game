@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sf;
 
-const int X_MAX=1280, Y_MAX=720, NUM_PLANETS = 3, NUM_TYPES=2, START_MONEY = 2000, MAX_PLAYERS = 6, font_size = Y_MAX/36; // =20
+const int X_MAX=1280, Y_MAX=720, NUM_PLANETS = 3, NUM_TYPES=2, START_MONEY = 2000, MAX_PLAYERS = 3, font_size = Y_MAX/36; // =20
 //Количество типов кораблей(NUM_TYPES) Размеры экрана(X_MAX,Y_MAX), число игроков
 const float base_lenght = X_MAX/16, base_height = Y_MAX/20; // base-lenght=80 пикселей base-height=36 пикселя
 const float base_ramka = 2;
@@ -29,6 +29,7 @@ struct planets
     int type;
     int belong;
     int buildings[3];//Массив строений: 0 - экономическое, 1 - защитное, 2 - казарма. Значение - уровень
+    int cost_buildings[3]; //Массив цен на улучшение построек
     int def;//Показатель защиты
     int add_ships;//Число доступных для постройки кораблей
     int res;  //Доходность
@@ -55,8 +56,8 @@ struct group_ships //Группы кораблей
     CircleShape picture;
 };
 
-
-char* int_to_string(int N); //функция перевода инта в строку
+void draw_menu(RenderWindow* window, Texture* fon_block, Font font, struct planets planets, struct players players);
+//Функция с простыми аргументами, которая рисует панель меню
 
 void Draw_block(float X, float Y, float lenght, float height, float ramka, Color color, RenderWindow* window, Texture* fon_block);
 /*в функцию дают высоту и длину блока, координаты верхнего левого угла и цвет в формате RGB
@@ -66,7 +67,7 @@ void Draw_block(float X, float Y, float lenght, float height, float ramka, Color
 void Draw_text(float X, float Y, float lenght, float height, Color color, char* string, int size, RenderWindow* window, Font font);
 //string и size отвечают за текст и размер шрифта, font - за шрифт(в main загрузим из файла)
 
-void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Now_Player, int Player_color[], int Buildings_level[], int Buildings_level_up_cost[], int Player_Money[], struct planets* planets);
+void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Player_color[], int Buildings_level[], int Buildings_level_up_cost[], int Player_Money, struct planets* planets);
 // из блоков и текста собирается панелька
 
 bool Click_mouse(Event event, float x_left, float x_right, float y_up, float y_down);
@@ -108,8 +109,8 @@ struct group_ships* delete_empty_groups(struct group_ships* all_groups);
 struct group_ships* add_ship_in_group (struct group_ships* allGroups, int fromGroup, int toGroup, int typeAmount[NUM_TYPES], struct ships_type* allTypes);
 //Функция добавляет корабли в существующую группу с индексом index_in из группы с индексом index_from
 
-group_ships *step_group(group_ships *one, int i);
-struct group_ships* step_one_ships(struct group_ships* allGroups);
+struct group_ships *step_group(group_ships *one, int i);
+struct group_ships *step_one_ships(struct group_ships* allGroups);
 //Беспрепятственный шаг полёта группы кораблей
 
 int check_index (int* index_active, int* index_passive, int array_active[NUM_TYPES], int array_passive[NUM_TYPES]);
@@ -121,7 +122,8 @@ struct group_ships* battle(struct group_ships* start_groups, int i_active, int  
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet);
 //Захват планеты. Необходимо сменить defenders у этой планеты
 
-int Active_Planet(struct planets* Planets); ////поиск активной планеты
+int Active_Planet(struct planets* Planets); //поиск активной планеты
 
+char* int_to_string(int N); //функция перевода инта в строку
 
 #endif // HEADER_H

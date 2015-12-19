@@ -1,5 +1,19 @@
 #include "header.h"
 
+
+
+
+void draw_menu(RenderWindow* window, Texture* fon_block, Font font, struct planets planets, struct players players)
+//Функция с простыми аргументами, которая рисует панель меню
+{
+    Draw_panel(window, Color(players.color[0],players.color[1],players.color[2]),
+                        fon_block, font, players.color, planets.buildings, planets.cost_buildings,
+                        players.gold, &(planets));
+    return;
+}
+
+
+
 char* int_to_string(int N) //функция перевода инта в строку
 {
     int len = 1;
@@ -46,7 +60,7 @@ void Draw_text(float X, float Y, float lenght, float height, Color color, char* 
 
     window->draw(text_block);
 }
-void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Now_Player, int Player_color[], int Buildings_level[], int* Buildings_level_up_cost, int Player_Money[], struct planets* planets)
+void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font, int Player_color[], int Buildings_level[], int* Buildings_level_up_cost, int Player_Money, struct planets* planets)
 // из блоков и текста собирается панелька
 {
     for(int i = 0; i < 6; i++)
@@ -69,7 +83,7 @@ void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font
         Draw_text(2 * base_lenght + 2 * j * base_lenght + base_ramka, Y_MAX - base_height + base_ramka, base_lenght - 2 * base_ramka, base_height, Color::White, int_to_string(Buildings_level_up_cost[j]), font_size, window, font);
     }
     Draw_block(0, Y_MAX - 2 * base_height, 2*base_lenght, 2 * base_height, base_ramka, Color(Player_color[0],Player_color[1],Player_color[2]), window, fon_block);
-    Draw_text(0 + base_ramka, Y_MAX - 2 * base_height + base_ramka, 2 * base_lenght - 2 * base_ramka, 2 * base_height - 2 * base_ramka, Color::White, int_to_string(Player_Money[Now_Player]), 2*font_size, window, font); // как здесь сделана привязка к деньгам каждого игрока, так и нужно сделать в уровнях зданий и, впоследствии, с кораблями
+    Draw_text(0 + base_ramka, Y_MAX - 2 * base_height + base_ramka, 2 * base_lenght - 2 * base_ramka, 2 * base_height - 2 * base_ramka, Color::White, int_to_string(Player_Money), 2*font_size, window, font); // как здесь сделана привязка к деньгам каждого игрока, так и нужно сделать в уровнях зданий и, впоследствии, с кораблями
 
 }
 bool Click_mouse(Event event, float x_left, float x_right, float y_up, float y_down) // функция, возвращающая true, если курсор мыши находится в определенной области

@@ -1,5 +1,7 @@
 #include "header.h"
 
+
+//Настоящие игроки начинаются с 1.
 int main()
 {
         /*Блок инициализации*/
@@ -14,7 +16,7 @@ int main()
 
         /*Блок загрузки всех вещей*/ //Ещё нужно сделать графику для кораблей
     Texture fon_block;
-    fon_block.loadFromFile("Textures/fon_block.jpg");
+    fon_block.loadFromFile("Textures/fon_block.png");
     Font font;
     font.loadFromFile("Fonts/font_block.ttf");    //загрузка шрифта из файла
     Texture fn_texture;
@@ -41,18 +43,6 @@ int main()
     }
 
     /*-------------------------------------------------------------------------------------------------*/
-
-
-
-
-
-
-
-    //это нужно убрать, т.к. уже есть, но я не успел
-    int Player_Money[7] = {0, 10000, 1500, 3600, 3400, 2200, 1100}; // массив на 7(!!!) элементов, потому что Now_Player начинается с 1
-
-
-
 
         RenderWindow window(VideoMode(X_MAX,Y_MAX), "Beta", Style::Fullscreen);
 
@@ -86,18 +76,22 @@ int main()
                         case Mouse::Left:
                             if(Click_mouse(event, X_MAX - 2 * base_lenght, X_MAX, Y_MAX, Y_MAX - 2 * base_height))
                             { //если курсор попадает в пределы кнопки и нажата клавиша, то меняется игрок
+                                players[activePlayer].gold+=500; //Нужна функция начисления денег
                                 activePlayer++;
-                            if(activePlayer > MAX_PLAYERS)
-                            {
-                                activePlayer =1;
-                            }
+                                if(activePlayer > MAX_PLAYERS)
+                                    activePlayer =1;
                             }
                             for(int j = 0; j < 3; j++) //j - индексы зданий
                             {
                                 if(Click_mouse(event, (2*j+3) * base_lenght, (2*j+4) * base_lenght, Y_MAX, Y_MAX - base_height))
                                 {
-                                    if(activePlayer == planets[Active_Planet(planets)].belong)
-                                        Buildings_level_up_cost[j] = level_up(planets, players, Active_Planet(planets), j, activePlayer);
+                                    if(activePlayer == planets[Active_Planet(planets)].belong) //Строим здания и выводим на экран
+                                    {
+                                        level_up(planets, players, Active_Planet(planets), j, activePlayer);
+                                        //Использем level_up для получения цены следующего улучшения, вставляя в качестве активного пустого игрока - 0.
+                                        planets[Active_Planet(planets)].cost_buildings[j] = level_up(planets, players, Active_Planet(planets), j, 0);
+                                    }
+
                                 }
                             }
                             break;
@@ -109,14 +103,12 @@ int main()
             }
             window.clear(Color::Black);
             add_planets(&window, event, &fn_sprite, planets1_sprite, planets2_sprite, planets, &timescore, NUM_PLANETS);
-            Draw_panel(&window, Color(players[activePlayer].color[0],players[activePlayer].color[1],players[activePlayer].color[2]),
-                    &fon_block, font, activePlayer, players[activePlayer].color, planets[Active_Planet(planets)].buildings, Buildings_level_up_cost,
-                    Player_Money, &(planets[activePlayer]));
+            draw_menu(&window, &fon_block, font, planets[Active_Planet(planets)], players[activePlayer]); //лежит в data.cpp
             window.display();
         }
 }
 
-
+    /*-------------------------------------------------------------------------------------------------*/
 
 /*int main()
 {

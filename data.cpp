@@ -15,17 +15,20 @@ void begining(struct planets *planets, struct players* players) //Инициал
     for(int i=0; i<NUM_PLANETS;i++)
     {
         planets[i].state = 0;
-        planets[i].belong = i%MAX_PLAYERS;
+        planets[i].belong = 1+i%MAX_PLAYERS; //+1 из-за пустого
         planets[i].type = i%3+1; //Коля, не помню, поправь пожалуйста
         for(int j=0; j<3; j++)
         {
             planets[i].buildings[j]=0;
+            /*Начальные цены построек*/
+            planets[i].cost_buildings[j]=level_up(planets,players,i,j,0);
         }
     }
     /*Теперь игроки*/
     ifstream in("files/color_table.txt"); //В этом файле лежат цвета в формате RGB
     for(int k = 0; k < MAX_PLAYERS + 1; k++)
     {
+        players[0].gold=0; //Количество денег у "пустого" игрока
         if(k!=0)
             players[k].gold = START_MONEY;
         for(int i=0;i<3;i++)
