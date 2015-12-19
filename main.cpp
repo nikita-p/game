@@ -52,7 +52,6 @@ int main()
         {
             timescore++;
             Event event;
-
             while (window.pollEvent(event))
             {
                 if (event.type == sf::Event::Closed)
@@ -101,9 +100,11 @@ int main()
                     break;
                 }
             }
+            int activePlanet=Active_Planet(planets);
+            if(activePlanet==-1) activePlanet=0;
             window.clear(Color::Black);
             add_planets(&window, event, &fn_sprite, planets1_sprite, planets2_sprite, planets, &timescore, NUM_PLANETS);
-            draw_menu(&window, &fon_block, font, planets[Active_Planet(planets)], players[activePlayer]); //лежит в data.cpp
+            draw_menu(&window, &fon_block, font, planets[activePlanet], players[activePlayer]); //лежит в data.cpp
             window.display();
         }
 }
