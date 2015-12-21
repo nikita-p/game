@@ -86,6 +86,7 @@ void Draw_panel(RenderWindow* window, Color color, Texture* fon_block, Font font
     int j=4;
     Draw_text(8 * base_lenght + base_ramka, Y_MAX - 2 * base_height + base_ramka, 4 * base_lenght - 2 * base_ramka, 4 * base_height - 2 * base_ramka, Color::Black, "Ships", 0.9 * font_size, window, font);
     Draw_text(2 * j * base_lenght + 1.6 * base_lenght, Y_MAX - 2 * base_height + base_ramka, 0.4 * base_lenght, base_height, Color::Black, int_to_string(planets->defenders->amount_ships), font_size, window, font);
+    Draw_text(3 * base_lenght + 2 * (j-1) * base_lenght + base_ramka, Y_MAX - base_height + base_ramka, base_lenght - 2 * base_ramka, base_height, Color::Black, "+ for 300$", font_size, window, font);
     /*---*/
     Draw_block(0, Y_MAX - 2 * base_height, 2*base_lenght, 2 * base_height, base_ramka, Color(Player_color[0],Player_color[1],Player_color[2]), window, fon_block);
     Draw_text(0 + base_ramka, Y_MAX - 2 * base_height + base_ramka, 2 * base_lenght - 2 * base_ramka, 2 * base_height - 2 * base_ramka, Color::White, int_to_string(Player_Money), 2*font_size, window, font); // как здесь сделана привязка к деньгам каждого игрока, так и нужно сделать в уровнях зданий и, впоследствии, с кораблями

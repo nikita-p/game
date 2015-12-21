@@ -1,6 +1,6 @@
 #include "header.h"
 
-void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N)
+void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N, group_ships* all_groups, ships_type* all_types)
 {
     float time = *timescore;
     Clock clock;
@@ -33,8 +33,17 @@ void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *p
         if (event.key.code == Mouse::Right)
             for (int i = 0; i < N; i++)
                 if (event.mouseButton.x > planets[i].x && event.mouseButton.x < (planets[i].x + Lenght) && event.mouseButton.y > planets[i].y && event.mouseButton.y < (planets[i].y + Lenght))
+                {
                     if (planets[i].state == 1)
+                    {
                         planets[i].state = 0;
+                        break;
+                    }
+                    else  //Корабли получают цель, проблема: прожимается много раз! + не работает функция target
+                    {
+                        planets[Active_Planet(planets)].defenders->amount_ships = planets[Active_Planet(planets)].defenders->amount_ships /2;
+                    }
+                }
     }
 
     window->draw(*fn_sprite);

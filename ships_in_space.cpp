@@ -8,10 +8,11 @@ struct ships_type* create_list_types ()
 //Здесь создаются типы кораблей. Нужно сделать один раз в начале игры.
 {
     struct ships_type* list = new struct ships_type [NUM_TYPES];
-    list[0].attack=10;
-    list[0].walking_ability=200;
-    list[1].attack=20;
-    list[1].walking_ability=400;
+    for(int i=0;i<NUM_TYPES;i++)
+    {
+        list[i].attack=10*(i+1);
+        list[i].walking_ability=200*(i+1);
+    }
     return list;
 }
 
@@ -22,11 +23,6 @@ struct group_ships* create_list_groups(struct planets* all_planets) //Прове
     for(int i=0;i<NUM_PLANETS;i++)
     {
         all_planets[i].defenders=&list_groups[i];
-        //Для последующего удаления или преобразования
-        list_groups[i].picture.setFillColor(sf::Color(i*55, 200-50*i, 50+10*i));
-        list_groups[i].picture.setPosition(all_planets[i].x,all_planets[i].y);
-        list_groups[i].picture.setRadius(50);
-        //Конец
         list_groups[i].amount_ships = 0;
         for(int j=0; j<NUM_TYPES;j++)
             list_groups[i].ships_types[j]=0;
@@ -35,19 +31,18 @@ struct group_ships* create_list_groups(struct planets* all_planets) //Прове
     return list_groups;
 }
 
-struct planets create_ship(struct planets creator, int type_index, int walk_ab, int activePlayer) //Проверено, работает ++
+void create_ship(struct planets* creator, int type_index, int walk_ab, int activePlayer) //Проверено, работает ++
 //Создание корабля. Список планет, какой тип (int индекс этого типа)!, сколько может пройти, куда поставить.
 {
-    creator.defenders->player=activePlayer; // !!
-    creator.defenders->current_position[0] = creator.x;
-    creator.defenders->current_position[1] = creator.y;
-    creator.defenders->next_position[0] = creator.defenders->current_position[0];
-    creator.defenders->next_position[1] = creator.defenders->current_position[1];
-    creator.defenders->ships_types[type_index] ++;
-    creator.defenders->amount_ships ++;
-    if (walk_ab < creator.defenders->walking_ability || creator.defenders->walking_ability==0)
-        creator.defenders->walking_ability=walk_ab;
-    return creator;
+    creator->defenders->player=activePlayer; // !!
+    creator->defenders->current_position[0] = creator->x;
+    creator->defenders->current_position[1] = creator->y;
+    creator->defenders->next_position[0] = creator->defenders->current_position[0];
+    creator->defenders->next_position[1] = creator->defenders->current_position[1];
+    creator->defenders->ships_types[type_index] ++;
+    creator->defenders->amount_ships++;
+    if (walk_ab < creator->defenders->walking_ability || creator->defenders->walking_ability==0)
+        creator->defenders->walking_ability=walk_ab;
 }
 
 int amount_groups_ships(struct group_ships* all_groups) //Работает, ++
@@ -105,6 +100,41 @@ struct group_ships* delete_empty_groups(struct group_ships* all_groups)
     return all_groups;
 }
 
+void add_ship_in_group(struct group_ships* fromGroup, struct group_ships* inGroup, int typeAmount[], struct ships_type* allTypes)
+{
+    inGroup->player=fromGroup->player;
+    for (int i=0; i<2; i++) //Проставляю координаты группе
+    {
+        inGroup->current_position[i] = fromGroup->current_position[i];
+        inGroup->next_position[i] = fromGroup->next_position[i];
+    }
+    for (int i=0; i<NUM_TYPES; i++) //Перекидываю корабли в группу
+    {
+        if(typeAmount[i]<=fromGroup->ships_types[i])
+        {
+            inGroup->ships_types[i] += typeAmount[i];
+            fromGroup->ships_types[i] -= typeAmount[i];
+            inGroup->amount_ships += typeAmount[i];
+            fromGroup->amount_ships -= typeAmount[i];
+        }
+        else{
+            inGroup->ships_types[i] += fromGroup->ships_types[i];
+            fromGroup->ships_types[i] = 0;
+            inGroup->amount_ships += fromGroup->ships_types[i];
+            fromGroup->amount_ships -= fromGroup->ships_types[i];
+        }
+    }
+    for(int i=0;i<NUM_TYPES;i++)
+    {
+        if(fromGroup->walking_ability == 0 || //Берём низкое движение у группы, из которой выходят
+                (fromGroup->ships_types[i]!=0 && fromGroup->walking_ability>allTypes[i].walking_ability))
+            fromGroup->walking_ability=allTypes[i].walking_ability;
+        if(inGroup->walking_ability == 0 || //Движение берём самое низкое у группы, в которую заходят
+                (inGroup->ships_types[i]!=0 && inGroup->walking_ability>allTypes[i].walking_ability))
+            inGroup->walking_ability=allTypes[i].walking_ability;
+    }
+}
+
 struct group_ships* add_ship_in_group (struct group_ships* allGroups, int fromGroup, int toGroup, int typeAmount[NUM_TYPES], struct ships_type* allTypes) //Вроде работает ++
 //Добавить корабль в существующую группу.(все группы, индекс группы, из которой берём, индекс, в которую берём, массив количества кораблей, все типы кораблей)
 {
@@ -142,24 +172,34 @@ struct group_ships* add_ship_in_group (struct group_ships* allGroups, int fromGr
     return allGroups;
 }
 
-struct group_ships* step_group(struct group_ships* one, int i) //Вроде работает
+struct group_ships* target(struct planets planets, struct group_ships* all_groups, int x, int y, struct ships_type* all_types)
+{
+    all_groups = add_new_group(all_groups);
+    int* flighters = new int [NUM_TYPES];
+    for(int i=0;i<NUM_TYPES;i++)
+        flighters[i]=planets.defenders->ships_types[i]/2;
+    add_ship_in_group(all_groups, planets.defenders, flighters, all_types);
+    delete[] flighters;
+    all_groups[0].next_position[0]=x;
+    all_groups[0].next_position[0]=y;
+    return all_groups;
+}
+
+void step_group(struct group_ships* one) //Вроде работает
 //Беспрепятственный шаг полёта одной группы кораблей
 {
-    if(one[i].next_position[0] == one[i].current_position[0] &&
-            one[i].next_position[1] == one[i].current_position[1])
-        return one;
-    int delta_x = (one[i].next_position[0]) - (one[i].current_position[0]);
-    int delta_y = (one[i].next_position[1]) - (one[i].current_position[1]);
+    if(one->next_position[0] == one->current_position[0] &&
+            one->next_position[1] == one->current_position[1]);
+    int delta_x = (one->next_position[0]) - (one->current_position[0]);
+    int delta_y = (one->next_position[1]) - (one->current_position[1]);
     double z = sqrt(delta_x*delta_x + delta_y*delta_y);
-    if (z<=one[i].walking_ability)
+    if (z<=one->walking_ability)
         {
-            one[i].current_position[0] = one[i].next_position[0];
-            one[i].current_position[1] = one[i].next_position[1];
-            return one;
+            one->current_position[0] = one->next_position[0];
+            one->current_position[1] = one->next_position[1];
         }
-    one[i].current_position[0] = one[i].current_position[0] + int(one[i].walking_ability*(delta_x/z));
-    one[i].current_position[1] = one[i].current_position[1] + int(one[i].walking_ability*(delta_y/z));
-    return one;
+    one->current_position[0] = one->current_position[0] + int(one->walking_ability*(delta_x/z));
+    one->current_position[1] = one->current_position[1] + int(one->walking_ability*(delta_y/z));
 }
 
 struct group_ships* step_one_ships(struct group_ships* allGroups) //Вроде работает
@@ -167,9 +207,7 @@ struct group_ships* step_one_ships(struct group_ships* allGroups) //Вроде �
 {
     int len = amount_groups_ships(allGroups);
     for(int i=0; i<len; i++)
-    {
-        allGroups = step_group(allGroups, i);
-    }
+        step_group(&allGroups[i]);
     return allGroups;
 }
 

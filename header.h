@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sf;
 
-const int X_MAX=1280, Y_MAX=720, NUM_PLANETS = 3, NUM_TYPES=2, START_MONEY = 2000, MAX_PLAYERS = 3, font_size = Y_MAX/36; // =20
+const int X_MAX=1280, Y_MAX=720, NUM_PLANETS = 3, NUM_TYPES=1, START_MONEY = 2000, MAX_PLAYERS = 3, font_size = Y_MAX/36; // =20
 //Количество типов кораблей(NUM_TYPES) Размеры экрана(X_MAX,Y_MAX), число игроков
 const float base_lenght = X_MAX/16, base_height = Y_MAX/20; // base-lenght=80 пикселей base-height=36 пикселя
 const float base_ramka = 2;
@@ -47,6 +47,7 @@ struct ships_type   //Тип корабля
 
 struct group_ships //Группы кораблей
 {
+    int number;
     int player;
     int amount_ships;
     int walking_ability;
@@ -55,6 +56,7 @@ struct group_ships //Группы кораблей
     int ships_types[NUM_TYPES];
     CircleShape picture;
 };
+void return_graphics(struct planets* planets, struct players* players, struct group_ships* all_groups, ships_type *all_types, int activePlayer);
 
 void draw_menu(RenderWindow* window, Texture* fon_block, Font font, struct planets planets, struct players players);
 //Функция с простыми аргументами, которая рисует панель меню
@@ -83,15 +85,18 @@ int build_ship(struct planets * list, struct players * list_p, int planet, int c
 
 void begining(struct planets *planets, players *players);
 
-void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N);
+void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N, group_ships* all_groups, ships_type* all_types);
 
 struct ships_type* create_list_types ();
 //Здесь создаются типы кораблей. Нужно сделать один раз в начале игры.
 
+struct group_ships* target(struct planets planets, struct group_ships* all_groups, int x, int y, struct ships_type* all_types);
+//Функция, задающая цель для кораблей.
+
 struct group_ships *create_list_groups(struct planets* all_planets);
 //Функция инициализирует список групп. Нужно сделать один раз в начале игры + идёт сопоставление планет и кораблей на них
 
-struct planets create_ship(planets creator, int type_index, int walk_ab, int activePlayer);
+void create_ship(struct planets* creator, int type_index, int walk_ab, int activePlayer);
 //Создание корабля. Список планет, какой тип (int индекс этого типа)!, сколько может пройти, куда поставить, кто играет.
 
 int amount_groups_ships(struct group_ships* all_groups);
@@ -106,10 +111,11 @@ struct group_ships* delete_one_group(struct group_ships* all, int trash_index);
 struct group_ships* delete_empty_groups(struct group_ships* all_groups);
 //Удаляю пустые группы кораблей. Вывожу лист групп.
 
+void add_ship_in_group(struct group_ships* fromGroup, struct group_ships* inGroup, int typeAmount[], struct ships_type* allTypes);
 struct group_ships* add_ship_in_group (struct group_ships* allGroups, int fromGroup, int toGroup, int typeAmount[NUM_TYPES], struct ships_type* allTypes);
 //Функция добавляет корабли в существующую группу с индексом index_in из группы с индексом index_from
 
-struct group_ships *step_group(group_ships *one, int i);
+void step_group(group_ships *one);
 struct group_ships *step_one_ships(struct group_ships* allGroups);
 //Беспрепятственный шаг полёта группы кораблей
 

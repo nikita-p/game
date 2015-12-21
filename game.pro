@@ -7,7 +7,8 @@ SOURCES += \
     economy.cpp \
     graph.cpp \
     menu.cpp \
-    data.cpp
+    data.cpp \
+    return-graphic.cpp
 
 LIBS += -L/home/nikitap/SFML-2.3.2/
 
