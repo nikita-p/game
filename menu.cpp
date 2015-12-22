@@ -1,8 +1,5 @@
 #include "header.h"
 
-
-
-
 void draw_menu(RenderWindow* window, Texture* fon_block, Font font, struct planets planets, struct players players)
 //Функция с простыми аргументами, которая рисует панель меню
 {

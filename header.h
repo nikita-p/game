@@ -50,11 +50,10 @@ struct group_ships //Группы кораблей
     int number;
     int player;
     int amount_ships;
-    int walking_ability;
     int current_position[2];
     int next_position[2];
     int ships_types[NUM_TYPES];
-    CircleShape picture;
+    struct group_ships* next;
 };
 void return_graphics(struct planets* planets, struct players* players, struct group_ships* all_groups, ships_type *all_types, int activePlayer);
 
@@ -85,7 +84,7 @@ int build_ship(struct planets * list, struct players * list_p, int planet, int c
 
 void begining(struct planets *planets, players *players);
 
-void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N, group_ships* all_groups, ships_type* all_types);
+void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N, group_ships* all_groups, ships_type* all_types, int activePlayer);
 
 struct ships_type* create_list_types ();
 //Здесь создаются типы кораблей. Нужно сделать один раз в начале игры.
@@ -96,10 +95,10 @@ struct group_ships* target(struct planets planets, struct group_ships* all_group
 struct group_ships *create_list_groups(struct planets* all_planets);
 //Функция инициализирует список групп. Нужно сделать один раз в начале игры + идёт сопоставление планет и кораблей на них
 
-void create_ship(struct planets* creator, int type_index, int walk_ab, int activePlayer);
+void create_ship(planets creator, int type_index, int activePlayer);
 //Создание корабля. Список планет, какой тип (int индекс этого типа)!, сколько может пройти, куда поставить, кто играет.
 
-int amount_groups_ships(struct group_ships* all_groups);
+int amount_groups_ships(struct group_ships* l);
 //Сколько групп кораблей существует
 
 struct group_ships *add_new_group(group_ships *all_groups);
@@ -108,15 +107,15 @@ struct group_ships *add_new_group(group_ships *all_groups);
 struct group_ships* delete_one_group(struct group_ships* all, int trash_index);
 //Функция позволяет удалить из списка групп одну с заданным индексом.
 
-struct group_ships* delete_empty_groups(struct group_ships* all_groups);
+struct group_ships* delete_empty_groups(struct group_ships* l);
 //Удаляю пустые группы кораблей. Вывожу лист групп.
 
 void add_ship_in_group(struct group_ships* fromGroup, struct group_ships* inGroup, int typeAmount[], struct ships_type* allTypes);
 struct group_ships* add_ship_in_group (struct group_ships* allGroups, int fromGroup, int toGroup, int typeAmount[NUM_TYPES], struct ships_type* allTypes);
 //Функция добавляет корабли в существующую группу с индексом index_in из группы с индексом index_from
 
-void step_group(group_ships *one);
-struct group_ships *step_one_ships(struct group_ships* allGroups);
+void step_group(group_ships *one, ships_type *all_types);
+struct group_ships *step_one_ships(struct group_ships* allGroups, ships_type *all_types);
 //Беспрепятственный шаг полёта группы кораблей
 
 int check_index (int* index_active, int* index_passive, int array_active[NUM_TYPES], int array_passive[NUM_TYPES]);
@@ -131,5 +130,7 @@ struct planets* seize(struct group_ships* new_kings, struct planets* change_plan
 int Active_Planet(struct planets* Planets); //поиск активной планеты
 
 char* int_to_string(int N); //функция перевода инта в строку
+
+int walking(struct group_ships* one_group, struct ships_type* all_types);
 
 #endif // HEADER_H

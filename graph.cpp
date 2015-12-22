@@ -1,12 +1,11 @@
 #include "header.h"
 
-void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N, group_ships* all_groups, ships_type* all_types)
+void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N, group_ships* all_groups, ships_type* all_types, int activePlayer)
 {
     float time = *timescore;
     Clock clock;
 
     int k = 4, T = 1, Lenght = 200;
-
 
     for (int j = 0; j < k; j++)
     {
@@ -34,14 +33,11 @@ void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *p
             for (int i = 0; i < N; i++)
                 if (event.mouseButton.x > planets[i].x && event.mouseButton.x < (planets[i].x + Lenght) && event.mouseButton.y > planets[i].y && event.mouseButton.y < (planets[i].y + Lenght))
                 {
-                    if (planets[i].state == 1)
+                    if (planets[Active_Planet(planets)].belong == activePlayer)
                     {
-                        planets[i].state = 0;
-                        break;
-                    }
-                    else  //Корабли получают цель, проблема: прожимается много раз! + не работает функция target
-                    {
-                        planets[Active_Planet(planets)].defenders->amount_ships = planets[Active_Planet(planets)].defenders->amount_ships /2;
+                        //Корабли получают цель, проблема: прожимается много раз! работает функция target
+                        all_groups = target(planets[(Active_Planet(planets))], all_groups, event.mouseButton.x,
+                                event.mouseButton.y, all_types);
                     }
                 }
     }

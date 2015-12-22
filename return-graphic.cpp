@@ -32,10 +32,9 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
     planets1_sprite[i].setColor(Color(players[j].color[0],players[j].color[1],players[j].color[2]));
     planets2_sprite[i].setColor(Color(players[j].color[0],players[j].color[1],players[j].color[2]));
     }
-
     /*-------------------------------------------------------------------------------------------------*/
 
-    RenderWindow window(VideoMode(X_MAX,Y_MAX), "Beta", Style::Fullscreen);
+    RenderWindow window(VideoMode(X_MAX,Y_MAX), "Beta", Style::Close);
 
     window.setKeyRepeatEnabled(false); // устанавливаем, чтобы по одиночному нажиманию клавиши запускалось одно событие, а не череда событий
 
@@ -86,11 +85,11 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
                         }
                         if(Click_mouse(event, (2*3+3) * base_lenght, (2*3+4) * base_lenght, Y_MAX- base_height, Y_MAX - 2*base_height)
                                 && activePlayer==planets[Active_Planet(planets)].belong)
-                        { //Здесь происходит создание кораблей, 1 штука - 100$
-                            if(players[activePlayer].gold-100>=0)
+                        { //Здесь происходит создание кораблей, 1 штука - 300$
+                            if(players[activePlayer].gold-300>=0)
                             {
-                                players[activePlayer].gold-=100;
-                                create_ship(&planets[Active_Planet(planets)], 0, 100, activePlayer);
+                                players[activePlayer].gold-=300;
+                                create_ship(planets[Active_Planet(planets)], 0, activePlayer);
                             }
                         }
                         break;
@@ -103,7 +102,8 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
         int activePlanet=Active_Planet(planets);
         if(activePlanet==-1) activePlanet=0;
         window.clear(Color::Black);
-        add_planets(&window, event, &fn_sprite, planets1_sprite, planets2_sprite, planets, &timescore, NUM_PLANETS, all_groups, all_types);
+        add_planets(&window, event, &fn_sprite, planets1_sprite, planets2_sprite, planets,
+                    &timescore, NUM_PLANETS, all_groups, all_types, activePlayer);
         draw_menu(&window, &fon_block, font, planets[activePlanet], players[activePlayer]); //лежит в data.cpp
         window.display();
     }

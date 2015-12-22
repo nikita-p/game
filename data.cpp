@@ -39,9 +39,6 @@ void begining(struct planets *planets, struct players* players) //Инициал
         }
     }
     in.close();
-    /*Теперь начальные корабли всем игрокам*/
-    for(int i = 0; i<33; i++)
-        create_ship(&planets[i%NUM_PLANETS],i%NUM_TYPES, 200, 1+i%MAX_PLAYERS);
 }
 
 int Active_Planet(struct planets* Planets) //поиск активной планеты
@@ -55,3 +52,5 @@ int Active_Planet(struct planets* Planets) //поиск активной пла�
     }
     return -1; //не найдено
 }
+
+
