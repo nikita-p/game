@@ -100,12 +100,15 @@ struct group_ships* delete_empty_groups(struct group_ships* l) //Не очень
 {
     struct group_ships* head = l;
     for(int i=0; l->next!=NULL; i++)
+    {
         if(l->amount_ships==0)
         {
             head = delete_one_group(head, i);
             l = head;
             i=0;
         }
+        l=l->next;
+    }
     return l;
 }
 
@@ -137,6 +140,8 @@ void add_ship_in_group(struct group_ships* fromGroup, struct group_ships* inGrou
 
 struct group_ships* target(struct planets planets, struct group_ships* all_groups, struct planets* planetTwo, struct ships_type* all_types)
 {
+    if(planets.defenders->amount_ships<=1)
+        return all_groups;
     int* flighters = new int [NUM_TYPES];
     int sumFlighters = 0;
     for(int i=0;i<NUM_TYPES;i++)
@@ -149,11 +154,19 @@ struct group_ships* target(struct planets planets, struct group_ships* all_group
 
     all_groups = add_new_group(all_groups);
     add_ship_in_group(planets.defenders, all_groups, flighters, all_types);
-    delete[] flighters;
     all_groups->current_position[0]=planetTwo->x;
     all_groups->current_position[1]=planetTwo->y;
-    planetTwo->defenders = all_groups;
-    planetTwo->belong = all_groups->player;
+    if(planetTwo->belong == all_groups->player)
+    {
+        add_ship_in_group(all_groups, planetTwo->defenders, flighters, all_types);
+        all_groups = delete_empty_groups(all_groups);
+        return all_groups;
+    }
+    delete[] flighters;
+    battle(&all_groups[0], planetTwo, all_types);
+    //planetTwo->defenders = all_groups;
+    //planetTwo->belong = all_groups->player;
+    all_groups = delete_empty_groups(all_groups);
     return all_groups;
 }
 
@@ -196,12 +209,40 @@ int check_index (int* index_active, int* index_passive, int array_active[NUM_TYP
     return 0;
 }
 
+void battle(struct group_ships* attacks, struct planets* defs, struct ships_type* all_types)
+//Это бой между группой и защитниками планеты.
+{
+    int index_active = 0, index_passive = 0, delta_attack = 0;
+    srand(time(NULL));
+    check_index(&index_active, &index_passive, attacks->ships_types, defs->defenders->ships_types);
+    while(attacks->amount_ships!=0 && defs->defenders->amount_ships != 0)
+    {
 
+       delta_attack = all_types[index_active].attack - all_types[index_passive].attack;
+       int P_win_attack = int(100*(delta_attack/100 + 1)/2); //Вероятность (в %) победы атакующего
+       int p = rand()%101; //А теперь бросаем кость.
+       if (p<P_win_attack)
+       {
+           attacks->ships_types[index_passive] --;
+           attacks->amount_ships --;
+       }
+       if (p>=P_win_attack)
+       {
+           defs->defenders->ships_types[index_active] --;
+           defs->defenders->amount_ships --;
+       }
+       if(attacks->ships_types[index_active]==0 || defs->defenders->ships_types[index_passive]==0)
+            check_index(&index_active, &index_passive, attacks->ships_types, defs->defenders->ships_types);
+    }
+    if(defs->defenders->amount_ships==0)
+            defs = seize(attacks, defs);
+}
 
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet)
 //Захват планеты. Необходимо сменить defenders у этой планеты
 {
     change_planet->defenders=new_kings;
+    change_planet->belong=new_kings->player;
     return change_planet;
 }
 

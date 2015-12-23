@@ -20,7 +20,7 @@ struct players
 	int number; // номер
     int gold;   //Счёт игрока
 	int color[3]; //цвет
-
+    bool death; //Возвращает правду, если игрок слился
 };
 struct planets
 {
@@ -47,7 +47,6 @@ struct ships_type   //Тип корабля
 
 struct group_ships //Группы кораблей
 {
-    int number;
     int player;
     int amount_ships;
     int current_position[2];
@@ -121,7 +120,7 @@ struct group_ships *step_one_ships(struct group_ships* allGroups, ships_type *al
 int check_index (int* index_active, int* index_passive, int array_active[NUM_TYPES], int array_passive[NUM_TYPES]);
 //Ищем лучший тип кораблей, который есть у противников
 
-struct group_ships* battle(struct group_ships* start_groups, int i_active, int  i_passive, struct ships_type* all_types);
+void battle(struct group_ships* attacks, struct planets* defs, struct ships_type* all_types);
 //Это сам бой между группами кораблей. Выбираем самых сильных и сталкиваем между собой, убиваем проигравший корабль :(
 
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet);

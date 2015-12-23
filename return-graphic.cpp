@@ -72,8 +72,8 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
                         if(Click_mouse(event, X_MAX - 2 * base_lenght, X_MAX, Y_MAX, Y_MAX - 2 * base_height))
                         { //если курсор попадает в пределы кнопки и нажата клавиша, то меняется игрок
                             players[activePlayer].gold+=500; //Нужна функция начисления денег
-                            activePlayer++;
-                            if(activePlayer > MAX_PLAYERS)
+                                activePlayer++;
+                                if(activePlayer > MAX_PLAYERS)
                                 activePlayer =1;
                         }
                         for(int j = 0; j < 3; j++) //j - индексы зданий
@@ -106,6 +106,7 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
         }
         int activePlanet=Active_Planet(planets);
         if(activePlanet==-1) activePlanet=0;
+
         window.clear(Color::Black);
         add_planets(&window, event, &fn_sprite, planets1_sprite, planets2_sprite, planets,
                     &timescore, NUM_PLANETS, all_groups, all_types, activePlayer);

@@ -29,6 +29,7 @@ void begining(struct planets *planets, struct players* players) //Инициал
     for(int k = 0; k < MAX_PLAYERS + 1; k++)
     {
         players[0].gold=0; //Количество денег у "пустого" игрока
+        players[k].death = false;
         if(k!=0)
             players[k].gold = START_MONEY;
         for(int i=0;i<3;i++)
@@ -52,5 +53,3 @@ int Active_Planet(struct planets* Planets) //поиск активной пла�
     }
     return -1; //не найдено
 }
-
-
