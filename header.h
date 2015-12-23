@@ -89,7 +89,7 @@ void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *p
 struct ships_type* create_list_types ();
 //Здесь создаются типы кораблей. Нужно сделать один раз в начале игры.
 
-struct group_ships* target(struct planets planets, struct group_ships* all_groups, int x, int y, struct ships_type* all_types);
+struct group_ships* target(struct planets planets, struct group_ships* all_groups, struct planets* planetTwo, struct ships_type* all_types);
 //Функция, задающая цель для кораблей.
 
 struct group_ships *create_list_groups(struct planets* all_planets);

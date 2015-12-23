@@ -34,12 +34,18 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
     }
     /*-------------------------------------------------------------------------------------------------*/
 
-    RenderWindow window(VideoMode(X_MAX,Y_MAX), "Beta", Style::Close);
+    RenderWindow window(VideoMode(X_MAX,Y_MAX), "Beta", Style::Default);
 
     window.setKeyRepeatEnabled(false); // устанавливаем, чтобы по одиночному нажиманию клавиши запускалось одно событие, а не череда событий
 
     while (window.isOpen())
     {
+        for (int i = 0; i < NUM_PLANETS; i++)
+        {
+        int j =planets[i].belong; //Делаем цвета для каждой планеты
+        planets1_sprite[i].setColor(Color(players[j].color[0],players[j].color[1],players[j].color[2]));
+        planets2_sprite[i].setColor(Color(players[j].color[0],players[j].color[1],players[j].color[2]));
+        }
         timescore++;
         Event event;
         while (window.pollEvent(event))
@@ -80,7 +86,6 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
                                     //Использем level_up для получения цены следующего улучшения, вставляя в качестве активного пустого игрока - 0.
                                     planets[Active_Planet(planets)].cost_buildings[j] = level_up(planets, players, Active_Planet(planets), j, 0);
                                 }
-
                             }
                         }
                         if(Click_mouse(event, (2*3+3) * base_lenght, (2*3+4) * base_lenght, Y_MAX- base_height, Y_MAX - 2*base_height)

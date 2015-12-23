@@ -135,16 +135,25 @@ void add_ship_in_group(struct group_ships* fromGroup, struct group_ships* inGrou
     }
 }
 
-struct group_ships* target(struct planets planets, struct group_ships* all_groups, int x, int y, struct ships_type* all_types)
+struct group_ships* target(struct planets planets, struct group_ships* all_groups, struct planets* planetTwo, struct ships_type* all_types)
 {
-    all_groups = add_new_group(all_groups);
     int* flighters = new int [NUM_TYPES];
+    int sumFlighters = 0;
     for(int i=0;i<NUM_TYPES;i++)
-        flighters[i]=planets.defenders->ships_types[i]/2;
+    {
+        flighters[i]=planets.defenders->ships_types[i] - 1;
+        sumFlighters+= flighters[i];
+    }
+    if(sumFlighters==0)
+        return all_groups;
+
+    all_groups = add_new_group(all_groups);
     add_ship_in_group(planets.defenders, all_groups, flighters, all_types);
     delete[] flighters;
-    all_groups[0].next_position[0]=x;
-    all_groups[0].next_position[1]=y;
+    all_groups->current_position[0]=planetTwo->x;
+    all_groups->current_position[1]=planetTwo->y;
+    planetTwo->defenders = all_groups;
+    planetTwo->belong = all_groups->player;
     return all_groups;
 }
 
@@ -187,39 +196,6 @@ int check_index (int* index_active, int* index_passive, int array_active[NUM_TYP
     return 0;
 }
 
-
-struct group_ships* battle(struct group_ships* start_groups, int i_active, int  i_passive, struct ships_type* all_types)
-//Это сам бой между группами кораблей. Выбираем самых сильных и сталкиваем между собой, убиваем проигравший корабль :(
-{
-    int index_active = 0, index_passive = 0, delta_attack = 0;
-    srand(time(NULL));
-    check_index(&index_active, &index_passive, start_groups[i_active].ships_types, start_groups[i_passive].ships_types);
-    while(start_groups[i_active].amount_ships!=0 && start_groups[i_passive].amount_ships != 0)
-    {
-
-       delta_attack = all_types[index_active].attack - all_types[index_passive].attack;
-       int P_win_attack = int(100*(delta_attack/100 + 1)/2); //Вероятность (в %) победы атакующего
-       int p = rand()%101; //А теперь бросаем кость.
-       if (p<P_win_attack)
-       {
-           start_groups[i_active].ships_types[index_passive] --;
-           start_groups[i_active].amount_ships --;
-       }
-       if (p>=P_win_attack)
-       {
-           start_groups[i_passive].ships_types[index_active] --;
-           start_groups[i_passive].amount_ships --;
-       }
-       if(start_groups[i_active].ships_types[index_active]==0 || start_groups[i_passive].ships_types[index_passive]==0)
-            check_index(&index_active, &index_passive, start_groups[i_active].ships_types, start_groups[i_passive].ships_types);
-    }
-    //Расформировать
-    if(start_groups[i_active].amount_ships==0)
-        start_groups = delete_one_group(start_groups,i_active);
-    if(start_groups[i_passive].amount_ships==0)
-        start_groups = delete_one_group(start_groups,i_passive);
-    return start_groups;
-}
 
 
 struct planets* seize(struct group_ships* new_kings, struct planets* change_planet)

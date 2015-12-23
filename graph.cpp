@@ -36,8 +36,7 @@ void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *p
                     if (planets[Active_Planet(planets)].belong == activePlayer)
                     {
                         //Корабли получают цель, проблема: прожимается много раз! работает функция target
-                        all_groups = target(planets[(Active_Planet(planets))], all_groups, event.mouseButton.x,
-                                event.mouseButton.y, all_types);
+                        all_groups = target(planets[(Active_Planet(planets))], all_groups, &planets[i], all_types);
                     }
                 }
     }
