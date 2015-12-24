@@ -223,13 +223,13 @@ void battle(struct group_ships* attacks, struct planets* defs, struct ships_type
        int p = rand()%101; //А теперь бросаем кость.
        if (p<P_win_attack)
        {
-           attacks->ships_types[index_passive] --;
-           attacks->amount_ships --;
+           defs->defenders->ships_types[index_passive] --;
+           defs->defenders->amount_ships --;
        }
        if (p>=P_win_attack)
        {
-           defs->defenders->ships_types[index_active] --;
-           defs->defenders->amount_ships --;
+           attacks->ships_types[index_active] --;
+           attacks->amount_ships --;
        }
        if(attacks->ships_types[index_active]==0 || defs->defenders->ships_types[index_passive]==0)
             check_index(&index_active, &index_passive, attacks->ships_types, defs->defenders->ships_types);

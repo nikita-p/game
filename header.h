@@ -132,4 +132,6 @@ char* int_to_string(int N); //функция перевода инта в стр
 
 int walking(struct group_ships* one_group, struct ships_type* all_types);
 
+void add_money(struct planets * planets, struct players* players, int activePlayer);//Добавление денег игроку
+
 #endif // HEADER_H

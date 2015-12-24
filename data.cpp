@@ -22,6 +22,7 @@ void begining(struct planets *planets, struct players* players) //Инициал
             planets[i].buildings[j]=0;
             /*Начальные цены построек*/
             planets[i].cost_buildings[j]=level_up(planets,players,i,j,0);
+            recount(planets);
         }
     }
     /*Теперь игроки*/
