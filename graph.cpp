@@ -1,4 +1,5 @@
 #include "header.h"
+#include <math.h>
 
 void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *planets1_sprite, Sprite *planets2_sprite, struct planets  *planets, float *timescore, int N, group_ships* all_groups, ships_type* all_types, int activePlayer)
 {
@@ -36,7 +37,7 @@ void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *p
                     if (planets[Active_Planet(planets)].belong == activePlayer)
                     {
                         //Корабли получают цель, проблема: прожимается много раз! работает функция target
-                        all_groups = target(planets[(Active_Planet(planets))], all_groups, &planets[i], all_types);
+                        all_groups = target(planets[(Active_Planet(planets))], all_groups, &planets[i], all_types, window);
                     }
                 }
     }
@@ -49,5 +50,31 @@ void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *p
         else
             window->draw(planets2_sprite[i]);
     }
+    bool t= true;
 }
 
+void motion_ship(RenderWindow *window, Sprite *ship_sprite, int x0, int y0, int x, int y, bool* k, float speed)
+{
+    int Lenght = 200, L = 70, l = 25;//  некоторые геометрические параметры
+    float dx = x - x0;
+    float dy = y - y0;
+    if (*k == true)
+    {
+        ship_sprite[0].setPosition(x0 + 75, y0 + 75);// установка начального положения
+        ship_sprite[0].setRotation(0);// установка начального угла
+    }
+    *k = false;
+
+    float DX = speed* dx / (10*sqrt(dx*dx + dy*dy)); // нормировка векторов и умножение на скорость
+    float DY = speed* dy / (10*sqrt(dx*dx + dy*dy));
+
+    ship_sprite[0].rotate(0.03); // изящный поворотик во время движения
+
+    if (!(ship_sprite[0].getPosition().x + l > x + L && ship_sprite[0].getPosition().x + l < x + Lenght - L && ship_sprite[0].getPosition().y + l > y + L && ship_sprite[0].getPosition().y + l < y + Lenght - L))
+    {
+        ship_sprite[0].move(DX, DY);  // движение и отрисовка в условии ненахождения
+        window->draw(ship_sprite[0]);
+    }
+    else
+        *k = true;
+}

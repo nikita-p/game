@@ -56,8 +56,8 @@ int level_up(struct planets * list, struct players * list_p, int planet, int bui
 void recount(struct planets * list)
 {
     for (int i = 0; i < NUM_PLANETS; i++){
-        list[i].def = (int)SD*pow(PR_D, list[i].buildings[2]);//сделать в битве
-        list[i].add_ships = (int)(SA/pow(PR_A, list[i].buildings[1]));//!!!
+        list[i].def = (int)SD*pow(PR_D, list[i].buildings[2]);//сделать в битве: OK
+        list[i].add_ships = (int)(SA/pow(PR_A, list[i].buildings[1]));// !!
         list[i].res = (int)SR*pow(PR_E, list[i].buildings[0]);
     }
 }

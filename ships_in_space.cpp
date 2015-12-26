@@ -138,7 +138,8 @@ void add_ship_in_group(struct group_ships* fromGroup, struct group_ships* inGrou
     }
 }
 
-struct group_ships* target(struct planets planets, struct group_ships* all_groups, struct planets* planetTwo, struct ships_type* all_types)
+struct group_ships* target(struct planets planets, struct group_ships* all_groups, struct planets* planetTwo,
+                           struct ships_type* all_types, RenderWindow* window)
 {
     if(planets.defenders->amount_ships<=1)
         return all_groups;
@@ -154,8 +155,21 @@ struct group_ships* target(struct planets planets, struct group_ships* all_group
 
     all_groups = add_new_group(all_groups);
     add_ship_in_group(planets.defenders, all_groups, flighters, all_types);
-    all_groups->current_position[0]=planetTwo->x;
-    all_groups->current_position[1]=planetTwo->y;
+    all_groups->next_position[0]=planetTwo->x;
+    all_groups->next_position[1]=planetTwo->y;
+
+
+    /*-----------Отрисовка полёта-----------
+    Sprite ship_sprite[1];
+    Texture ship_texture;
+    ship_texture.loadFromFile("files/ufo_image.jpg");
+    ship_sprite[0].setTexture(ship_texture);
+    ship_sprite[0].setPosition(0, 0);
+    bool t = true;
+    motion_ship(window, ship_sprite, all_groups->current_position[0], all_groups->current_position[1],
+            all_groups->next_position[0], all_groups->next_position[0], &t, 40);
+    --------------------------------------*/
+
     if(planetTwo->belong == all_groups->player)
     {
         add_ship_in_group(all_groups, planetTwo->defenders, flighters, all_types);
@@ -212,13 +226,20 @@ int check_index (int* index_active, int* index_passive, int array_active[NUM_TYP
 void battle(struct group_ships* attacks, struct planets* defs, struct ships_type* all_types)
 //Это бой между группой и защитниками планеты.
 {
-    int index_active = 0, index_passive = 0, delta_attack = 0;
+    int index_active = 0, index_passive = 0;
+    float delta_attack = 0;
     srand(time(NULL));
     check_index(&index_active, &index_passive, attacks->ships_types, defs->defenders->ships_types);
     while(attacks->amount_ships!=0 && defs->defenders->amount_ships != 0)
     {
-
-       delta_attack = all_types[index_active].attack - all_types[index_passive].attack;
+       int attacksLevelAttack = all_types[index_active].attack;
+       float defsLevelAttack = (all_types[index_passive].attack)*
+               pow((1 + 1.0/(1 + defs->buildings[2])),double(defs->buildings[2]));
+       delta_attack = attacksLevelAttack - int(defsLevelAttack);
+       if(delta_attack < -95)
+           delta_attack = -95;
+       if(delta_attack > 95)
+           delta_attack = 95;
        int P_win_attack = int(100*(delta_attack/100 + 1)/2); //Вероятность (в %) победы атакующего
        int p = rand()%101; //А теперь бросаем кость.
        if (p<P_win_attack)

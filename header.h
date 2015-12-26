@@ -74,7 +74,6 @@ bool Click_mouse(Event event, float x_left, float x_right, float y_up, float y_d
 // функция, возвращающая true, если курсор мыши находится в определенной области
 
 
-
 int level_up(struct planets * list, struct players * list_p, int planet, int building, int ACTIVE_PLAYER);
 
 void recount(struct planets * list);
@@ -88,7 +87,8 @@ void add_planets(RenderWindow *window, Event event, Sprite *fn_sprite, Sprite *p
 struct ships_type* create_list_types ();
 //Здесь создаются типы кораблей. Нужно сделать один раз в начале игры.
 
-struct group_ships* target(struct planets planets, struct group_ships* all_groups, struct planets* planetTwo, struct ships_type* all_types);
+struct group_ships* target(struct planets planets, struct group_ships* all_groups, struct planets* planetTwo,
+                           struct ships_type* all_types, RenderWindow* window);
 //Функция, задающая цель для кораблей.
 
 struct group_ships *create_list_groups(struct planets* all_planets);
@@ -131,6 +131,9 @@ int Active_Planet(struct planets* Planets); //поиск активной пла
 char* int_to_string(int N); //функция перевода инта в строку
 
 int walking(struct group_ships* one_group, struct ships_type* all_types);
+
+void motion_ship(RenderWindow *window, Sprite *ship_sprite, int x0, int y0, int x, int y, bool* k, float speed);
+//Отрисовка движения кораблей.
 
 void add_money(struct planets * planets, struct players* players, int activePlayer);//Добавление денег игроку
 

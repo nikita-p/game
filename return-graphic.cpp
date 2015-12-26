@@ -87,14 +87,12 @@ void return_graphics(struct planets* planets,struct players* players,struct grou
                                 if(activePlayer == planets[Active_Planet(planets)].belong) //Строим здания и выводим на экран
                                 {
                                     level_up(planets, players, Active_Planet(planets), j, activePlayer);
-                                    //Использем level_up для получения цены следующего улучшения, вставляя в качестве активного пустого игрока - 0.
-                                    //planets[Active_Planet(planets)].cost_buildings[j] = level_up(planets, players, Active_Planet(planets), j, 0);
                                 }
                             }
                         }
                         if(Click_mouse(event, (2*3+3) * base_lenght, (2*3+4) * base_lenght, Y_MAX- base_height, Y_MAX - 2*base_height)
                                 && activePlayer==planets[Active_Planet(planets)].belong)
-                        { //Здесь происходит создание кораблей, 1 штука - 300$
+                        { //Здесь происходит создание кораблей
                             if(players[activePlayer].gold>=planets[Active_Planet(planets)].add_ships)
                             {
                                 players[activePlayer].gold-=planets[Active_Planet(planets)].add_ships;
